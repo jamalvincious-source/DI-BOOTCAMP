@@ -9,7 +9,7 @@ print()
 # Initialize the names list
 names = ['Samus', 'Cortana', 'V', 'Link', 'Mario', 'Cortana', 'Samus']
 
-print(f"Available names: {nvin}")
+print(f"Available names: {names}")
 print()
 
 # Ask user for their name
@@ -23,10 +23,3 @@ if user_name in names:
 else:
     print(f"❌ '{user_name}' is not in the list.")
     print(f"Available names: {names}")
-Instructions
-Using this variable
-
-names = ['Samus', 'Cortana', 'V', 'Link', 'Mario', 'Cortana', 'Samus']
-Ask a user for their name, if their name is in the names list print out the index of the first occurence of the name.
-
-Example: if input is 'Cortana' we should be printing the index 1
