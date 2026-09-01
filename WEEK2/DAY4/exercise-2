@@ -1,0 +1,40 @@
+import requests
+
+def fetch_hilarious_gifs():
+    # 1. Use f-strings and variables to build the URL string
+    query = "hilarious"
+    rating = "g"
+    api_key = "hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My"
+    limit = 25  # Fetch enough initial results to filter and slice down to 10
+    
+    url = f"https://api.giphy.com/v1/gifs/search?q={query}&rating={rating}&api_key={api_key}&limit={limit}"
+    
+    response = requests.get(url)
+    
+    # 2. If the status code is 200 return the result as a JSON object
+    if response.status_code == 200:
+        data = response.json()
+        all_gifs = data.get("data", [])
+        
+        # 3. Only return gifs which have a height bigger than 100
+        filtered_gifs = []
+        for gif in all_gifs:
+            # Giphy stores height as a string inside images -> original -> height
+            height = int(gif["images"]["original"]["height"])
+            if height > 100:
+                filtered_gifs.append(gif)
+                
+        # 4. Return the length of the object received (filtered list or first 10)
+        print(f"Total filtered gifs matching height > 100: {len(filtered_gifs)}")
+        
+        # 5. Only return the first 10 gifs
+        first_10_gifs = filtered_gifs[:10]
+        print(f"Final count of returned gifs (max 10): {len(first_10_gifs)}")
+        
+        return first_10_gifs
+    else:
+        print(f"Failed to fetch data. Status code: {response.status_code}")
+        return []
+
+if __name__ == "__main__":
+    fetch_hilarious_gifs()
