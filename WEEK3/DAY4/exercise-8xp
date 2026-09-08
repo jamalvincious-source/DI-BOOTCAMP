@@ -1,0 +1,28 @@
+const makeJuice = (size) => {
+    const ingredients = [];
+
+    function addIngredients(...args) {
+        ingredients.push(...args);
+    }
+
+    function displayJuice() {
+        const sentence = `The ${size} juice contains ${ingredients.join(', ')}.`;
+
+        if (typeof document === 'undefined') {
+            return sentence;
+        }
+
+        const p = document.createElement('p');
+        p.textContent = sentence;
+        document.body.appendChild(p);
+
+        return sentence;
+    }
+
+    addIngredients('apple', 'banana', 'strawberry');
+    addIngredients('mango', 'pineapple', 'orange');
+
+    displayJuice();
+};
+
+makeJuice('large');

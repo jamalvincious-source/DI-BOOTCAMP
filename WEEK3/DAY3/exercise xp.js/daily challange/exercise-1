@@ -1,0 +1,67 @@
+const form = document.getElementById("libform");
+const storySpan = document.getElementById("story");
+const shuffleButton = document.getElementById("shuffle-button");
+
+// Keep track of the last entered values to use them when shuffling
+let currentValues = {
+    noun: "",
+    adjective: "",
+    person: "",
+    verb: "",
+    place: ""
+};
+
+// Define an array of story templates
+const stories = [
+    (v) => `One day, ${v.person} went to ${v.place} with a ${v.adjective} ${v.noun}. They decided to ${v.verb} all afternoon!`,
+    (v) => `While visiting ${v.place}, ${v.person} saw a ${v.adjective} ${v.noun} trying to ${v.verb}. It was quite a sight!`,
+    (v) => `The ${v.adjective} ${v.noun} loved to ${v.verb} at ${v.place} alongside ${v.person}.`,
+    (v) => `Have you ever heard about ${v.person} who brought a ${v.adjective} ${v.noun} to ${v.place} just to ${v.verb}?`
+];
+
+let lastStoryIndex = -1;
+
+// Function to generate and display a random story
+function displayRandomStory() {
+    let randomIndex;
+    // Ensure we pick a different story than the last one if possible
+    do {
+        randomIndex = Math.floor(Math.random() * stories.length);
+    } while (randomIndex === lastStoryIndex && stories.length > 1);
+
+    lastStoryIndex = randomIndex;
+    storySpan.textContent = stories[randomIndex](currentValues);
+}
+
+// Form submit event listener
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    // Get input values and trim whitespace
+    currentValues.noun = document.getElementById("noun").value.trim();
+    currentValues.adjective = document.getElementById("adjective").value.trim();
+    currentValues.person = document.getElementById("person").value.trim();
+    currentValues.verb = document.getElementById("verb").value.trim();
+    currentValues.place = document.getElementById("place").value.trim();
+
+    // Make sure values are not empty
+    if (
+        !currentValues.noun ||
+        !currentValues.adjective ||
+        !currentValues.person ||
+        !currentValues.verb ||
+        !currentValues.place
+    ) {
+        alert("Please fill in all the fields before generating a story!");
+        return;
+    }
+
+    // Display initial story and show the shuffle button
+    displayRandomStory();
+    shuffleButton.style.display = "block";
+});
+
+// Bonus: Shuffle button event listener
+shuffleButton.addEventListener("click", function() {
+    displayRandomStory();
+});

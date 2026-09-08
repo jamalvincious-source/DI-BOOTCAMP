@@ -1,0 +1,73 @@
+*{ box-sizing: border-box; }
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    user-select: none; /* stops text/squares from being highlighted while dragging */
+}
+
+#colors {
+    display: grid;
+    grid-template-columns: repeat(6, 50px);
+    gap: 10px;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.color {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border: 2px solid black;
+}
+
+.color.selected {
+    outline: 3px solid #333;
+    outline-offset: 2px;
+}
+
+.red {
+    background-color: red;
+}
+
+.blue {
+    background-color: blue;
+}
+
+.green {
+    background-color: green;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.purple {
+    background-color: purple;
+}
+
+.black {
+    background-color: black;
+}
+
+#grid {
+    display: grid;
+
+/* 20 columns */
+grid-template-columns: repeat(20, 25px);
+
+/* rows are created automatically as squares are added */
+grid-auto-rows: 25px;
+
+gap: 1px;
+
+justify-content: center;
+
+margin: 30px auto;
+}
+
+.square {
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    border: 1px solid #ddd;
+}

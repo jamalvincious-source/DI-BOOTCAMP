@@ -1,0 +1,59 @@
+// 1. Using a DOM property, retrieve the h1 and console.log it.
+const h1 = document.querySelector("h1");
+console.log(h1);
+
+// 2. Using DOM methods, remove the last paragraph in the <article> tag.
+const article = document.querySelector("article");
+if (article) {
+    const paragraphs = article.querySelectorAll("p");
+    if (paragraphs.length) {
+        paragraphs[paragraphs.length - 1].remove();
+    }
+}
+
+// 3. Add an event listener which will change the background color of the h2 to red when clicked.
+const h2 = document.querySelector("h2");
+if (h2) {
+    h2.addEventListener("click", function() {
+        h2.style.backgroundColor = "red";
+    });
+}
+
+// 4. Add an event listener which will hide the h3 when it’s clicked on (use display: none).
+const h3 = document.querySelector("h3");
+if (h3) {
+    h3.addEventListener("click", function() {
+        h3.style.display = "none";
+    });
+}
+
+// 5. Add a <button> to the HTML file, that when clicked on, should make the text of all paragraphs bold.
+const boldBtn = document.getElementById("boldButton");
+if (boldBtn) {
+    boldBtn.addEventListener("click", function() {
+        const allParas = document.querySelectorAll("article p");
+        allParas.forEach(p => {
+            p.style.fontWeight = "bold";
+        });
+    });
+}
+
+// BONUS 1: When you hover on the h1, set the font size to a random pixel size between 0 to 100.
+if (h1) {
+    h1.addEventListener("mouseover", function() {
+        const randomSize = Math.floor(Math.random() * 101); // 0 to 100
+        h1.style.fontSize = randomSize + "px";
+    });
+}
+
+// BONUS 2: When you hover on the 2nd paragraph, it should fade out.
+const secondParagraph = document.querySelectorAll("article p")[1];
+if (secondParagraph) {
+    secondParagraph.addEventListener("mouseover", function() {
+        secondParagraph.classList.add("fade-out");
+    });
+
+    secondParagraph.addEventListener("mouseout", function() {
+        secondParagraph.classList.remove("fade-out");
+    });
+}

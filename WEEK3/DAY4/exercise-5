@@ -1,0 +1,17 @@
+// 1. Function Declaration
+function convertKgToGrams(kg) {
+    return kg * 1000;
+}
+console.log(convertKgToGrams(5));
+
+// 2. Function Expression
+const convertKgToGramsExpr = function(kg) {
+    return kg * 1000;
+};
+console.log(convertKgToGramsExpr(5));
+
+// 3. Function declarations are hoisted, whereas function expressions are not.
+
+// 4. One line arrow function
+const convertKgToGramsArrow = kg => kg * 1000;
+console.log(convertKgToGramsArrow(5));

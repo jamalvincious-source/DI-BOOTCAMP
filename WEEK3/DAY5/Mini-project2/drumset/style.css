@@ -1,0 +1,107 @@
+:root {
+  --panel: #1c1a18;
+  --panel-edge: #2c2926;
+  --pad: #d8622f;
+  --pad-dark: #a6461d;
+  --cream: #ece6da;
+  --dim: #8a8377;
+}
+
+*{ box-sizing: border-box; }
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #0f0e0d;
+  background-image:
+    radial-gradient(circle at 50% 0%, #23201d 0%, #0f0e0d 60%);
+  font-family: "Courier New", ui-monospace, monospace;
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rig {
+  padding: 40px 44px 34px;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.03);
+  width: 620px;
+  max-width: 92vw;
+}
+
+.rig-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--panel-edge);
+  padding-bottom: 14px;
+}
+
+.rig-head h1 {
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  margin: 0;
+  font-weight: normal;
+  color: var(--pad);
+}
+
+.rig-head span {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.pads {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.drum {
+  position: relative;
+  aspect-ratio: 1 / 0.85;
+  background: linear-gradient(160deg, #262320, #17150f);
+  border: 1px solid #3a352f;
+  border-radius: 8px;
+  color: var(--cream);
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 60ms ease, box-shadow 60ms ease, border-color 60ms ease;
+  outline-offset: 3px;
+}
+
+.drum .key {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--cream);
+}
+
+.drum .label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+.drum.playing {
+  transform: scale(0.94) translateY(2px);
+  border-color: var(--pad);
+  box-shadow: 0 0 0 2px var(--pad-dark), 0 0 18px rgba(216, 98, 47, 0.45);
+}
+
+.drum.playing .key { color: var(--pad); }
+
+.foot {
+  margin-top: 26px;
+  font-size: 11px;
+  color: var(--dim);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
