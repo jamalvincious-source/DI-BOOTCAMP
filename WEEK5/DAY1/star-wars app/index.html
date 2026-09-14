@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Star Wars Web App</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Animated Space Background -->
+    <div class="space-background">
+
+        <div class="stars stars-one"></div>
+
+        <div class="stars stars-two"></div>
+
+        <div class="stars stars-three"></div>
+
+        <div class="shooting-stars"></div>
+
+    </div>
+
+
+    <!-- Main Application -->
+    <main class="container">
+
+        <div class="title-section">
+
+            <p class="subtitle">
+                A long time ago in a galaxy far, far away...
+            </p>
+
+            <h1>STAR WARS</h1>
+
+            <div class="title-line"></div>
+
+        </div>
+
+
+        <button id="find-button">
+
+            <i class="fa-solid fa-jedi"></i>
+
+            Find Someone
+
+        </button>
+
+
+        <section id="character-container">
+
+
+            <!-- Loading -->
+            <div id="loading" class="state hidden">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                <h2>Searching the galaxy...</h2>
+
+                <p>
+                    Connecting to the Star Wars database
+                </p>
+
+            </div>
+
+
+            <!-- Error -->
+            <div id="error" class="state hidden">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <h2>Transmission Lost</h2>
+
+                <p>
+                    Oh no! That person isn't available.
+                </p>
+
+                <p>
+                    Try searching the galaxy again.
+                </p>
+
+            </div>
+
+
+            <!-- Character -->
+            <div id="character-info" class="character-card hidden">
+
+                <div class="card-glow"></div>
+
+
+                <div class="character-header">
+
+                    <span class="character-label">
+                        STAR WARS DATABASE
+                    </span>
+
+                    <div class="status-dot"></div>
+
+                </div>
+
+
+                <h2 id="name"></h2>
+
+
+                <div class="character-details">
+
+
+                    <div class="detail">
+
+                        <i class="fa-solid fa-ruler-vertical"></i>
+
+                        <div>
+                            <span>Height</span>
+                            <strong id="height"></strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <i class="fa-solid fa-venus-mars"></i>
+
+                        <div>
+                            <span>Gender</span>
+                            <strong id="gender"></strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <i class="fa-solid fa-calendar"></i>
+
+                        <div>
+                            <span>Birth Year</span>
+                            <strong id="birth-year"></strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <i class="fa-solid fa-earth-americas"></i>
+
+                        <div>
+                            <span>Home World</span>
+                            <strong id="home-world"></strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-footer">
+
+                    <span>DATA RETRIEVED FROM SWAPI</span>
+
+                    <span>● ONLINE</span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

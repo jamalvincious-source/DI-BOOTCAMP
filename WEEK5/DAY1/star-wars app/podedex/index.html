@@ -1,0 +1,65 @@
+
+11:02 AM
+
+
+
+
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokédex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="device">
+  <div class="lights"><span></span><span></span><span></span></div>
+
+  <div class="screen-wrap">
+    <div class="screen">
+      <div class="screen-top-row">
+        <span>POKÉDEX</span>
+        <span class="poke-id" id="pokeIdLabel">#---</span>
+      </div>
+
+      <div class="sprite-stage">
+        <img id="pokeSprite" src="" alt="" style="display:none;" />
+      </div>
+
+      <div class="poke-name" id="pokeName">— select —</div>
+
+      <div class="type-row" id="typeRow"></div>
+
+      <div class="stat-row" id="statRow">
+        <div><span class="label">Height</span><span class="value" id="statHeight">--</span></div>
+        <div><span class="label">Weight</span><span class="value" id="statWeight">--</span></div>
+      </div>
+
+      <div class="status-msg hidden" id="statusMsg"></div>
+    </div>
+  </div>
+
+  <div class="hinge"></div>
+
+  <div class="controls">
+    <div class="nav-row">
+      <button class="nav-btn" id="prevBtn">← Prev</button>
+      <span class="id-readout" id="idReadout">----</span>
+      <button class="nav-btn" id="nextBtn">Next →</button>
+    </div>
+    <button class="random-btn" id="randomBtn">Surprise me</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
