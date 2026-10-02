@@ -1,0 +1,22 @@
+# Daily Challenge
+
+- React App
+- React Components
+- JSX
+- Bootstrap
+
+---
+
+## Instructions: Build a React Carousel
+
+![React Carousel](https://github.com/devtlv/studentsGitHub/blob/master/JS/Week%208/Day1/Daily%20Challenge/daily%20challenge.png?raw=true)
+
+Check the [demo](http://di-react-carousel.surge.sh/).
+
+1. Use the [React Responsive Carousel package](https://www.npmjs.com/package/react-responsive-carousel) to create the carousel.
+2. In your `App` component, use the corresponding imports from the installed package.
+3. Use these images for your carousel:
+   - [Hong Kong](https://res.klook.com/image/upload/fl_lossy.progressive,q_65/c_fill,w_480,h_384/cities/jrfyzvgzvhs1iylduuhj.jpg)
+   - [Macao](https://res.klook.com/image/upload/fl_lossy.progressive,q_65/c_fill,w_480,h_384/cities/c1cklkyp6ms02tougufx.webp)
+   - [Japan](https://res.klook.com/image/upload/fl_lossy.progressive,q_65/c_fill,w_480,h_384/cities/e8fnw35p6zgusq218foj.webp)
+   - [Las Vegas](https://res.klook.com/image/upload/fl_lossy.progressive,q_65/c_fill,w_480,h_384/cities/liw377az16sxmp9a6ylg.webp)
