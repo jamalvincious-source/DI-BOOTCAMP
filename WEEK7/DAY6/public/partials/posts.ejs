@@ -1,0 +1,24 @@
+<div class="container">
+  <% if (posts && posts.length > 0) { %>
+    <% posts.forEach(post => { %>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="<%= post.link %>" target="_blank" rel="noreferrer">
+              <%= post.title %>
+            </a>
+          </h5>
+          <p class="card-text">
+            <strong>Published:</strong> <%= post.pubDate %><br />
+            <strong>Creator:</strong> <%= post.creator || 'Unknown' %><br />
+            <strong>Category:</strong>
+            <%= post.categories && post.categories.length ? post.categories.join(', ') : 'General' %>
+          </p>
+          <p class="card-text post-content"><%= post.contentSnippet || post.content || 'No description available.' %></p>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="alert alert-info">No posts found.</div>
+  <% } %>
+</div>
