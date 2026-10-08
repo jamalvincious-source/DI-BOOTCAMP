@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #222b3c;
+  background: #f3f6ff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+button, input, select { font: inherit; }
+
+.page {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 32px 20px;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at 5% 10%, rgb(201 220 255 / 44%), transparent 37%),
+    radial-gradient(ellipse at 97% 93%, rgb(225 211 255 / 45%), transparent 36%),
+    #f8f9fd;
+}
+
+.decoration { position: absolute; border: 1px solid rgb(87 117 193 / 10%); border-radius: 50%; pointer-events: none; }
+.decoration-one { width: 440px; height: 440px; top: -245px; right: -130px; }
+.decoration-two { width: 330px; height: 330px; bottom: -210px; left: -120px; }
+
+.calculator {
+  position: relative;
+  width: min(100%, 540px);
+  padding: clamp(28px, 6vw, 52px);
+  border: 1px solid rgb(255 255 255 / 90%);
+  border-radius: 24px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow: 0 24px 70px rgb(50 69 120 / 12%), 0 2px 8px rgb(50 69 120 / 4%);
+  backdrop-filter: blur(14px);
+}
+
+.brand-line { display: flex; align-items: center; gap: 9px; color: #7d879b; font-size: .68rem; font-weight: 700; letter-spacing: .15em; }
+.brand-icon { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 9px; color: #fff; background: #566fba; font-size: 1rem; letter-spacing: 0; }
+h1 { margin: 27px 0 9px; color: #202b43; font-family: "Playfair Display", Georgia, serif; font-size: clamp(2.6rem, 8vw, 4rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.04; }
+h1 span { color: #7186c3; font-style: italic; }
+.intro { margin: 0 0 30px; color: #828ba0; font-size: .94rem; }
+
+.number-fields { display: grid; grid-template-columns: 1fr 34px 1fr; align-items: end; gap: 12px; }
+label { display: flex; flex-direction: column; gap: 9px; color: #7d879b; font-size: .65rem; font-weight: 700; letter-spacing: .1em; }
+input, select { width: 100%; height: 52px; padding: 0 14px; border: 1px solid #e3e7f0; border-radius: 11px; outline: none; color: #26334d; background: #fbfcff; font-size: .95rem; font-weight: 500; letter-spacing: normal; transition: border-color 160ms, box-shadow 160ms; }
+input::placeholder { color: #bac1cf; }
+input:focus, select:focus { border-color: #8297d1; box-shadow: 0 0 0 3px rgb(113 134 195 / 14%); }
+.operator-mark { display: grid; width: 34px; height: 52px; place-items: center; color: #8293c8; font-family: "Playfair Display", serif; font-size: 1.8rem; }
+.operation-select { margin-top: 23px; }
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #7f8aa2 50%), linear-gradient(135deg, #7f8aa2 50%, transparent 50%); background-position: calc(100% - 18px) 22px, calc(100% - 13px) 22px; background-repeat: no-repeat; background-size: 5px 5px; cursor: pointer; }
+
+.calculate-button { display: flex; width: 100%; align-items: center; justify-content: space-between; margin-top: 18px; padding: 15px 18px; border: 0; border-radius: 11px; color: white; background: #566fba; box-shadow: 0 7px 16px rgb(86 111 186 / 22%); cursor: pointer; font-weight: 700; transition: background 160ms, transform 160ms, box-shadow 160ms; }
+.calculate-button:hover { transform: translateY(-1px); background: #455fa8; box-shadow: 0 10px 20px rgb(86 111 186 / 27%); }
+.calculate-button:active { transform: translateY(0); }
+.calculate-button span { font-size: 1.2rem; }
+
+.answer-panel { display: grid; min-height: 82px; margin-top: 18px; padding: 15px 18px; align-content: center; border: 1px dashed #dce2ef; border-radius: 11px; background: #fbfcff; }
+.answer-hint { margin: 0; color: #a1a9b9; text-align: center; font-size: .82rem; }
+.answer-panel.has-result { border-style: solid; border-color: #e2e7f1; background: #f7f9ff; }
+.answer-label { color: #8a94a7; font-size: .6rem; font-weight: 700; letter-spacing: .13em; }
+.answer { margin: 3px 0 0; color: #354c8c; font-family: "Playfair Display", Georgia, serif; font-size: 1.85rem; font-weight: 600; overflow-wrap: anywhere; }
+.error-message { margin: 0; color: #bd4545; text-align: center; font-size: .84rem; }
+.footer-note { margin: 23px 0 0; color: #a3a9b6; text-align: center; font-size: .7rem; letter-spacing: .03em; }
+
+@media (max-width: 430px) {
+  .calculator { padding: 26px 21px; border-radius: 19px; }
+  .number-fields { grid-template-columns: 1fr 25px 1fr; gap: 7px; }
+  input, select { height: 48px; padding: 0 10px; font-size: .85rem; }
+  .operator-mark { width: 25px; height: 48px; }
+}
