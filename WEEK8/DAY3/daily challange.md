@@ -23,4 +23,93 @@
 
 ---
 
+### Task state and reducer example
+
+Use this context and reducer as the shared task state for the application:
+
+```jsx
+import React, {
+  createContext,
+  useContext,
+  useReducer
+} from "react";
+
+const TaskContext = createContext();
+
+const initialState = {
+  tasks: [
+    { id: 1, text: "Learn React", completed: false },
+    { id: 2, text: "Learn useContext", completed: true },
+    { id: 3, text: "Learn useReducer", completed: false }
+  ],
+  filter: "ALL"
+};
+
+const taskReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TASK":
+      return {
+        ...state,
+        tasks: [
+          ...state.tasks,
+          {
+            id: Date.now(),
+            text: action.payload,
+            completed: false
+          }
+        ]
+      };
+
+    case "TOGGLE_TASK":
+      return {
+        ...state,
+        tasks: state.tasks.map((task) =>
+          task.id === action.payload
+            ? { ...task, completed: !task.completed }
+            : task
+        )
+      };
+
+    case "EDIT_TASK":
+      return {
+        ...state,
+        tasks: state.tasks.map((task) =>
+          task.id === action.payload.id
+            ? { ...task, text: action.payload.text }
+            : task
+        )
+      };
+
+    case "DELETE_TASK":
+      return {
+        ...state,
+        tasks: state.tasks.filter(
+          (task) => task.id !== action.payload
+        )
+      };
+
+    case "FILTER_TASKS":
+      return {
+        ...state,
+        filter: action.payload
+      };
+
+    default:
+      return state;
+  }
+};
+
+export const TaskProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(taskReducer, initialState);
+
+  return (
+    <TaskContext.Provider value={{ state, dispatch }}>
+      {children}
+    </TaskContext.Provider>
+  );
+};
+
+export const useTasks = () => useContext(TaskContext);
+```
+
 ### Submit your Daily Challenge:
