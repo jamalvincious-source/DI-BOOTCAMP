@@ -23,3 +23,15 @@ npm run dev
 ```
 
 Switch between All Books, Horror, Fantasy, and Science Fiction to filter the inventory.
+
+## Daily Productivity Tracker
+
+A task and category tracker demonstrating Redux Toolkit CRUD reducers, memoized selectors, task completion, and `useCallback`.
+
+```powershell
+cd "daioy challange"
+npm install
+npm run dev
+```
+
+Filter tasks by category, add/edit/delete tasks, mark tasks complete, and manage categories.
