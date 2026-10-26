@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Story Share</title>
+    <style>
+      :root {
+        --bg: #101827;
+        --panel: #1f2937;
+        --panel-soft: #111827;
+        --accent: #7c3aed;
+        --text: #f9fafb;
+        --muted: #cbd5e1;
+        --success: #10b981;
+        --danger: #ef4444;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #111827, #1f2937);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .card {
+        background: rgba(31, 41, 55, 0.9);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h1, h2 { margin-top: 0; }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      input, textarea, button {
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.12);
+        padding: 12px 14px;
+        font-size: 1rem;
+      }
+
+      input, textarea {
+        background: rgba(17, 24, 39, 0.9);
+        color: var(--text);
+      }
+
+      button {
+        background: var(--accent);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+      }
+
+      .story {
+        background: rgba(17, 24, 39, 0.7);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 18px;
+      }
+
+      .story h3 {
+        margin-top: 0;
+      }
+
+      .meta {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+      }
+
+      .hidden { display: none; }
+
+      #status {
+        margin-bottom: 16px;
+        min-height: 24px;
+        color: var(--muted);
+      }
+
+      .success { color: var(--success); }
+      .error { color: var(--danger); }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Story Share</h1>
+      <div id="status"></div>
+
+      <div id="authSection" class="card">
+        <h2>Register</h2>
+        <form id="registerForm">
+          <input id="registerUsername" placeholder="Username" required />
+          <input id="registerPassword" type="password" placeholder="Password" required />
+          <button type="submit">Create account</button>
+        </form>
+
+        <h2 style="margin-top: 24px;">Login</h2>
+        <form id="loginForm">
+          <input id="loginUsername" placeholder="Username" required />
+          <input id="loginPassword" type="password" placeholder="Password" required />
+          <button type="submit">Login</button>
+        </form>
+      </div>
+
+      <div id="storiesSection" class="hidden">
+        <div class="card">
+          <h2>Create Story</h2>
+          <form id="storyForm">
+            <input id="storyTitle" placeholder="Story title" required />
+            <textarea id="storyContent" rows="5" placeholder="Write your story..." required></textarea>
+            <button type="submit">Publish story</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Stories</h2>
+          <div id="storiesList" class="grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API = 'http://localhost:5000';
+      const statusEl = document.getElementById('status');
+      const authSection = document.getElementById('authSection');
+      const storiesSection = document.getElementById('storiesSection');
+      const storiesList = document.getElementById('storiesList');
+      let token = localStorage.getItem('storyToken') || '';
+
+      const setStatus = (message, type = 'success') => {
+        statusEl.textContent = message;
+        statusEl.className = type === 'error' ? 'error' : 'success';
+      };
+
+      const authHeaders = () => ({
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      });
+
+      const refreshAuthView = () => {
+        const loggedIn = !!token;
+        authSection.classList.toggle('hidden', loggedIn);
+        storiesSection.classList.toggle('hidden', !loggedIn);
+      };
+
+      document.getElementById('registerForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          username: document.getElementById('registerUsername').value,
+          password: document.getElementById('registerPassword').value,
+        };
+
+        try {
+          const response = await fetch(`${API}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Registration failed');
+          setStatus('Registration successful. Please log in.', 'success');
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      });
+
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          username: document.getElementById('loginUsername').value,
+          password: document.getElementById('loginPassword').value,
+        };
+
+        try {
+          const response = await fetch(`${API}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Login failed');
+
+          token = data.token;
+          localStorage.setItem('storyToken', token);
+          refreshAuthView();
+          loadStories();
+          setStatus('Logged in successfully.', 'success');
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      });
+
+      document.getElementById('storyForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          title: document.getElementById('storyTitle').value,
+          content: document.getElementById('storyContent').value,
+        };
+
+        try {
+          const response = await fetch(`${API}/stories`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Story creation failed');
+          document.getElementById('storyForm').reset();
+          loadStories();
+          setStatus('Story published.', 'success');
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      });
+
+      async function loadStories() {
+        if (!token) return;
+
+        try {
+          const response = await fetch(`${API}/stories`, {
+            headers: authHeaders(),
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Unable to load stories');
+
+          storiesList.innerHTML = '';
+          data.stories.forEach((story) => {
+            const card = document.createElement('article');
+            card.className = 'story';
+            card.innerHTML = `
+              <h3>${story.title}</h3>
+              <div class="meta">By ${story.author}</div>
+              <p>${story.content}</p>
+              <div class="meta">Comments: ${story.comments.length}</div>
+            `;
+            storiesList.appendChild(card);
+          });
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      }
+
+      refreshAuthView();
+      if (token) {
+        loadStories();
+      }
+    </script>
+  </body>
+</html>
