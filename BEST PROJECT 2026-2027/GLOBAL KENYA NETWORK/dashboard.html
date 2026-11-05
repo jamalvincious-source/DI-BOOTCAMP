@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Global Network Kenya</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="js/app.js" defer></script>
+    <style>
+      :root {
+        --gnk-blue: #0b3b78;
+        --gnk-blue-strong: #072d5f;
+        --gnk-sky: #ebf3ff;
+        --gnk-border: #dfeaf8;
+        --gnk-text: #1f2937;
+        --gnk-muted: #667085;
+        --gnk-success: #0f766e;
+        --gnk-warning: #b45309;
+        --gnk-danger: #b42318;
+        --gnk-card: #ffffff;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #f5f8fc;
+        color: var(--gnk-text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+
+      .topbar {
+        background: #fff;
+        border-bottom: 1px solid var(--gnk-border);
+      }
+
+      .topbar-inner {
+        width: min(1200px, 92%);
+        margin: 0 auto;
+        min-height: 74px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        font-weight: 900;
+        color: var(--gnk-blue);
+        letter-spacing: 0.02em;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        color: #334155;
+        font-weight: 700;
+        font-size: 0.96rem;
+      }
+
+      .nav-links a:hover { color: var(--gnk-blue); }
+
+      .nav-button {
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1px solid var(--gnk-border);
+        background: var(--gnk-sky);
+        color: var(--gnk-blue);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .dashboard-shell {
+        width: min(1200px, 92%);
+        margin: 32px auto 48px;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #0b3b78, #1758b7 60%, #4285d4);
+        color: white;
+        border-radius: 20px;
+        padding: 28px 30px;
+        box-shadow: 0 18px 35px rgba(11, 59, 120, 0.15);
+      }
+
+      .hero-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        opacity: 0.8;
+        margin-bottom: 8px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        line-height: 1.1;
+      }
+
+      .hero p {
+        margin: 10px 0 0;
+        max-width: 780px;
+        opacity: 0.9;
+      }
+
+      .badge {
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.08);
+        border-radius: 999px;
+        padding: 9px 14px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 26px;
+      }
+
+      .stat-card {
+        background: var(--gnk-card);
+        border: 1px solid var(--gnk-border);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 7px 18px rgba(15, 23, 42, 0.04);
+      }
+
+      .stat-card .label {
+        color: var(--gnk-muted);
+        font-size: 0.83rem;
+        margin-bottom: 10px;
+      }
+
+      .stat-card .value {
+        font-size: clamp(1.6rem, 2.5vw, 2.3rem);
+        font-weight: 900;
+        color: var(--gnk-blue);
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.9fr);
+        gap: 22px;
+        margin-top: 28px;
+      }
+
+      .panel {
+        background: var(--gnk-card);
+        border: 1px solid var(--gnk-border);
+        border-radius: 18px;
+        padding: 20px 22px;
+        box-shadow: 0 7px 18px rgba(15, 23, 42, 0.04);
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .panel h2 {
+        margin: 0;
+        font-size: 1.3rem;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ecfdf5;
+        color: var(--gnk-success);
+        border: 1px solid #bbf7d0;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .market-list,
+      .request-list,
+      .video-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .market-item,
+      .request-item,
+      .video-item {
+        border: 1px solid var(--gnk-border);
+        border-radius: 14px;
+        background: #fff;
+        padding: 16px;
+      }
+
+      .item-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+
+      .item-top h3 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .meta {
+        color: var(--gnk-muted);
+        font-size: 0.88rem;
+        margin: 4px 0;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: #eef6ff;
+        color: var(--gnk-blue);
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      button,
+      .secondary-btn,
+      .ghost-btn {
+        appearance: none;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        background: var(--gnk-blue);
+        color: white;
+      }
+
+      .primary-btn:hover { background: var(--gnk-blue-strong); }
+
+      .secondary-btn {
+        background: #eaf1ff;
+        color: var(--gnk-blue);
+      }
+
+      .ghost-btn {
+        background: transparent;
+        border: 1px solid var(--gnk-border);
+        color: var(--gnk-text);
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+      }
+
+      .status.pending { background: #fff7eb; color: var(--gnk-warning); }
+      .status.active { background: #ecfdf5; color: var(--gnk-success); }
+      .status.review { background: #fef3c7; color: #92400e; }
+      .status.approved { background: #ecfdf5; color: var(--gnk-success); }
+      .status.published { background: #ecfdf5; color: var(--gnk-success); }
+      .status.rejected { background: #fef3f2; color: var(--gnk-danger); }
+
+      .empty-state {
+        border: 1px dashed var(--gnk-border);
+        border-radius: 14px;
+        padding: 24px 16px;
+        text-align: center;
+        color: var(--gnk-muted);
+      }
+
+      .request-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .request-table th,
+      .request-table td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--gnk-border);
+        vertical-align: middle;
+      }
+
+      .request-table th {
+        color: var(--gnk-muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+      }
+
+      .video-form {
+        display: grid;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .video-form input,
+      .video-form textarea {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid var(--gnk-border);
+        border-radius: 10px;
+        font: inherit;
+        background: #fff;
+      }
+
+      .video-form textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      .summary-box {
+        display: grid;
+        gap: 12px;
+      }
+
+      .summary-card {
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        border: 1px solid var(--gnk-border);
+        border-radius: 14px;
+        padding: 14px 15px;
+      }
+
+      .summary-card h3 {
+        margin: 0 0 6px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--gnk-muted);
+      }
+
+      .summary-card strong {
+        font-size: 1.5rem;
+        color: var(--gnk-blue);
+      }
+
+      .right-stack {
+        display: grid;
+        gap: 22px;
+      }
+
+      @media (max-width: 920px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .panel,
+        .hero {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a href="index.html" class="brand">GLOBAL NETWORK KENYA</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="business.html">Businesses</a>
+          <a href="pages/packages.html">Packages</a>
+          <a href="dashboard.html" class="active">Dashboard</a>
+          <button class="nav-button" id="logoutBtn" type="button">Log out</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dashboard-shell">      <section class="hero" id="hero">        <div class="hero-top">
+          <div>
+            <div class="eyebrow">Network Portal</div>
+            <h1 id="welcomeTitle">Your dashboard</h1>
+            <p id="dashboardIntro">Track market activity and manage quick requests.</p>
+          </div>
+          <div>
+            <div class="badge" id="roleBadge">User</div>
+          </div>
+        </div>
+      </section>
+
+      <div id="packagePrompt" style="display:none; margin:18px 0 0; padding:14px 16px; border-radius:12px; background:#eef6ff; border:1px solid #bfdaf8; color:#0b3b78; font-weight:700;"></div>
+
+      <section class="stats-grid" id="statsGrid"></section>
+
+      <section class="content-grid">
+        <div id="primaryPanel"></div>
+
+        <aside class="right-stack" id="secondaryPanel"></aside>
+      </section>
+    </main>
+
+    <script>
+      let authenticatedUser = null;
+
+      const MARKET_ITEMS = [
+        {
+          id: 1,
+          name: "Green Valley Fresh",
+          category: "Agriculture",
+          county: "Nakuru",
+          summary: "Organic fruits, vegetables and farm produce for urban wholesale and retail deliveries.",
+          status: "Active"
+        },
+        {
+          id: 2,
+          name: "Kenya Home Build",
+          category: "Construction",
+          county: "Nairobi",
+          summary: "Modern residential and commercial design, renovation and project management services.",
+          status: "Active"
+        },
+        {
+          id: 3,
+          name: "NiaTech Digital",
+          category: "Technology",
+          county: "Mombasa",
+          summary: "Web design, branding and digital growth solutions for small businesses and startups.",
+          status: "Active"
+        },
+        {
+          id: 4,
+          name: "Harbor Luxe Hotel",
+          category: "Tourism",
+          county: "Mombasa",
+          summary: "Boutique hospitality, events and guest experiences for tourists and business travelers.",
+          status: "Active"
+        }
+      ];
+
+      const DEFAULT_VIDEOS = [
+        {
+          title: "Farm-to-market showcase",
+          business: "Green Valley Fresh",
+          description: "Behind-the-scenes of harvest, packaging and fast delivery coverage.",
+          url: "https://example.com/video/farm-market"
+        },
+        {
+          title: "Property walkthrough",
+          business: "Kenya Home Build",
+          description: "A virtual tour covering premium finishes and material choices.",
+          url: "https://example.com/video/home-build"
+        }
+      ];
+
+      const ROLE_TEXT = {
+        user: "User",
+        admin: "Admin",
+        super_admin: "Super Admin"
+      };
+
+      function getCookieValue(name) {
+        const cookieString = document.cookie || "";
+        const match = cookieString
+          .split(";")
+          .map((entry) => entry.trim())
+          .find((entry) => entry.startsWith(`${name}=`));
+
+        if (!match) {
+          return "";
+        }
+
+        return decodeURIComponent(match.split("=").slice(1).join("="));
+      }
+
+      function safeRead(key, fallback) {
+        try {
+          const value = localStorage.getItem(key) || sessionStorage.getItem(key) || getCookieValue(key);
+          return value ? JSON.parse(value) : fallback;
+        } catch (error) {
+          return fallback;
+        }
+      }
+
+      function writeJson(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[character]);
+      }
+
+      async function adminRequest(path, options = {}) {
+        try {
+          return await window.GNK.apiRequest(path, options);
+        } catch (error) {
+          if (error.status === 401) {
+            window.GNK.clearSession();
+            window.location.href = "pages/login.html";
+            throw new Error("Your session has expired. Please log in again.");
+          }
+
+          throw error;
+        }
+      }
+
+      function getDashboardUser() {
+        return authenticatedUser;
+      }
+
+      function ensureAccess() {
+        const user = getDashboardUser();
+        if (!user) {
+          window.location.href = "pages/login.html";
+          return null;
+        }
+        return user;
+      }
+
+      async function loadAuthenticatedUser() {
+        if (!window.GNK.getToken()) {
+          return null;
+        }
+
+        let result;
+        try {
+          result = await window.GNK.apiRequest("/auth/me");
+        } catch (error) {
+          if (error.status === 401) {
+            return null;
+          }
+
+          throw error;
+        }
+
+        if (!result.user || !result.user.role) {
+          throw new Error("The server returned an incomplete account profile.");
+        }
+
+        return result.user;
+      }
+
+      function showPackagePromptIfNeeded() {
+        const params = new URLSearchParams(window.location.search);
+        const packageName = params.get("package");
+        const phone = params.get("phone");
+        const message = params.get("message");
+        const promptElement = document.getElementById("packagePrompt");
+
+        if (!promptElement || !packageName) {
+          return;
+        }
+
+        const packageText = {
+          standard: "Standard Package",
+          featured: "Featured Package",
+          banner: "Premium Banner Package"
+        }[packageName] || "Selected package";
+
+        const baseMessage = message
+          ? decodeURIComponent(message)
+          : `Your ${packageText} subscription is ready. We will send updates to your registered mobile number.`;
+
+        const displayPhone = phone ? decodeURIComponent(phone) : "your registered mobile number";
+        promptElement.textContent = `${baseMessage} Registered number: ${displayPhone}.`;
+        promptElement.style.display = "block";
+      }
+
+      function formatDateStamp(dateValue) {
+        return new Date(dateValue).toLocaleDateString("en-KE", {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        });
+      }
+
+      function normalizeStatus(value, fallback = "Pending") {
+        const status = String(value ?? fallback).trim();
+        const lower = status.toLowerCase();
+
+        if (lower === "approved") return "Approved";
+        if (lower === "rejected") return "Rejected";
+        if (lower === "published") return "Published";
+        if (lower === "pending") return "Pending";
+
+        return fallback;
+      }
+
+      function getRequests() {
+        return safeRead("gnk_advert_requests", [
+          {
+            id: 101,
+            user: "Grace Wanjiku",
+            business: "NiaTech Digital",
+            status: "Pending",
+            date: new Date().toISOString()
+          },
+          {
+            id: 102,
+            user: "James Kariuki",
+            business: "Harbor Luxe Hotel",
+            status: "Approved",
+            date: new Date(Date.now() - 86400000).toISOString()
+          }
+        ]).map(request => ({ ...request, status: normalizeStatus(request.status, "Pending") }));
+      }
+
+      function getBusinessRequests() {
+        return safeRead("gnk_business_requests", [
+          {
+            id: 201,
+            user: "Grace Wanjiku",
+            business: "Bamboo Blends Cafe",
+            category: "Food",
+            county: "Nairobi",
+            status: "Pending",
+            date: new Date().toISOString()
+          },
+          {
+            id: 202,
+            user: "James Kariuki",
+            business: "Kingsway Interiors",
+            category: "Construction",
+            county: "Kiambu",
+            status: "Approved",
+            date: new Date(Date.now() - 172800000).toISOString()
+          }
+        ]).map(request => ({ ...request, status: normalizeStatus(request.status, "Pending") }));
+      }
+
+      function getVideos() {
+        return safeRead("gnk_business_videos", DEFAULT_VIDEOS);
+      }
+
+      function renderStats() {
+        document.getElementById("statsGrid").innerHTML = `
+          <article class="stat-card"><div class="label">My businesses</div><div class="value">—</div></article>
+          <article class="stat-card"><div class="label">My marketplace listings</div><div class="value">—</div></article>
+          <article class="stat-card"><div class="label">My adverts</div><div class="value">—</div></article>
+          <article class="stat-card"><div class="label">Pending payments</div><div class="value">—</div></article>`;
+      }
+
+      async function renderUserDashboard(user) {
+        const primaryPanel = document.getElementById("primaryPanel");
+        const secondaryPanel = document.getElementById("secondaryPanel");
+
+        primaryPanel.innerHTML = `
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Grow your business</h2>
+              <span class="pill">Connected to your account</span>
+            </div>
+            <p class="meta">Your business profiles, marketplace listings, adverts and payment requests are loaded from your Global Network Kenya account.</p>
+            <div class="actions">
+              <a class="primary-btn" href="business.html">Register a business</a>
+              <a class="secondary-btn" href="pages/businesses.html">Browse businesses and marketplace</a>
+              <a class="secondary-btn" href="pages/packages.html">View advertising packages</a>
+            </div>
+          </div>
+        `;
+
+        secondaryPanel.innerHTML = `
+          <div class="panel">
+            <div class="panel-header">
+              <h2>My adverts</h2>
+              <a class="pill" href="pages/packages.html">Create an advert</a>
+            </div>
+            <div id="accountAdverts" class="request-list">Loading your adverts…</div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h2>My payment requests</h2></div>
+            <div id="accountPayments" class="request-list">Loading payment requests…</div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Sell on the marketplace</h2>
+              <span class="pill">Seller tools</span>
+            </div>
+            <p class="meta">Add an item with its price and condition. New or edited listings are reviewed before appearing publicly.</p>
+            <form class="video-form" id="sellerListingForm">
+              <input id="sellerListingTitle" type="text" placeholder="Item title" minlength="3" maxlength="150" required />
+              <textarea id="sellerListingDescription" placeholder="Describe the item (at least 10 characters)" minlength="10" maxlength="3000" required></textarea>
+              <select id="sellerListingCategory" required>
+                <option value="">Choose a category</option>
+                ${["Agriculture & Farming", "Food & Restaurants", "Beauty & Personal Care", "Construction & Home Services", "Education & Training", "Healthcare & Medical Services", "Real Estate", "Retail & Shopping", "Technology & Electronics", "Transport & Logistics", "Tourism & Hospitality", "Other"].map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("")}
+              </select>
+              <input id="sellerListingCounty" type="text" placeholder="County" minlength="2" maxlength="100" required />
+              <input id="sellerListingPrice" type="number" placeholder="Price (KES)" min="0" max="1000000000" step="1" required />
+              <select id="sellerListingCondition" required>
+                <option value="">Choose condition</option>
+                ${["New", "Like new", "Good", "Fair", "Refurbished"].map(condition => `<option value="${condition}">${condition}</option>`).join("")}
+              </select>
+              <input id="sellerListingImage" type="url" placeholder="Photo URL (optional)" maxlength="2048" />
+              <button class="primary-btn" id="sellerListingSubmit" type="submit">Submit listing for review</button>
+              <button class="secondary-btn" id="sellerListingCancelEdit" type="button" hidden>Cancel edit</button>
+            </form>
+            <p id="sellerListingMessage" role="status" aria-live="polite"></p>
+            <div id="sellerListingList" class="request-list" aria-live="polite">Loading your listings…</div>
+          </div>
+        `;
+
+        const [businessResponse, advertResponse, paymentResponse] = await Promise.all([
+          window.GNK.apiRequest("/businesses/mine"),
+          window.GNK.apiRequest("/adverts/mine"),
+          window.GNK.apiRequest("/payments/mine")
+        ]);
+        const businessCount = businessResponse.businesses?.length || 0;
+        const advertCount = advertResponse.adverts?.length || 0;
+        const paymentCount = (paymentResponse.payments || []).filter(payment =>
+          ["pending", "processing"].includes(payment.status)
+        ).length;
+        const listingsResponse = await window.GNK.apiRequest("/listings/mine");
+        const listingCount = listingsResponse.listings?.length || 0;
+        document.getElementById("statsGrid").innerHTML = `
+          <article class="stat-card"><div class="label">My businesses</div><div class="value">${businessCount}</div></article>
+          <article class="stat-card"><div class="label">My marketplace listings</div><div class="value">${listingCount}</div></article>
+          <article class="stat-card"><div class="label">My adverts</div><div class="value">${advertCount}</div></article>
+          <article class="stat-card"><div class="label">Pending payments</div><div class="value">${paymentCount}</div></article>`;
+
+        document.getElementById("accountAdverts").innerHTML = advertResponse.adverts?.length
+          ? advertResponse.adverts.map(advert => `
+            <article class="request-item">
+              <div class="item-top"><h3>${escapeHTML(advert.title)}</h3>
+                <span class="status ${escapeHTML(advert.status)}">${escapeHTML(advert.status)}</span></div>
+              <p class="meta">${escapeHTML(advert.business?.name || "Business")} · ${escapeHTML(advert.package?.name || "No package")} · Submitted ${formatDateStamp(advert.createdAt)}</p>
+            </article>`).join("")
+          : '<div class="empty-state">You have not submitted any adverts.</div>';
+        document.getElementById("accountPayments").innerHTML = paymentResponse.payments?.length
+          ? paymentResponse.payments.map(payment => `
+            <article class="request-item">
+              <div class="item-top"><h3>${escapeHTML(payment.package?.name || "Advert payment")}</h3>
+                <span class="status ${escapeHTML(payment.status)}">${escapeHTML(payment.status)}</span></div>
+              <p class="meta">${escapeHTML(payment.currency)} ${Number(payment.amount).toLocaleString("en-KE")} · ${escapeHTML(payment.phone || "")} · ${formatDateStamp(payment.createdAt)}</p>
+            </article>`).join("")
+          : '<div class="empty-state">You have no payment requests.</div>';
+
+        let editingListingId = null;
+        const sellerListingForm = document.getElementById("sellerListingForm");
+        const sellerListingMessage = document.getElementById("sellerListingMessage");
+        const sellerListingList = document.getElementById("sellerListingList");
+        const sellerListingSubmit = document.getElementById("sellerListingSubmit");
+        const sellerListingCancelEdit = document.getElementById("sellerListingCancelEdit");
+        const showSellerListingMessage = (message, isError = false) => {
+          sellerListingMessage.textContent = message;
+          sellerListingMessage.style.color = isError ? "#b42318" : "#0f766e";
+        };
+        const loadSellerListings = async () => {
+          const result = await window.GNK.apiRequest("/listings/mine");
+          const listings = result.listings || [];
+          sellerListingList.innerHTML = listings.length
+            ? listings.map(listing => `
+              <article class="request-item">
+                <div class="item-top">
+                  <h3>${escapeHTML(listing.title)}</h3>
+                  <span class="status ${escapeHTML(listing.status)}">${escapeHTML(listing.status)}</span>
+                </div>
+                <p class="meta">KES ${Number(listing.price).toLocaleString("en-KE")} · ${escapeHTML(listing.condition)} · ${escapeHTML(listing.county)}</p>
+                <div class="actions">
+                  <button class="secondary-btn" type="button" data-edit-listing="${listing.id}">Edit</button>
+                  <button class="ghost-btn" type="button" data-delete-listing="${listing.id}">Remove</button>
+                </div>
+              </article>`).join("")
+            : '<div class="empty-state">You have not submitted any marketplace listings yet.</div>';
+          return listings;
+        };
+        const resetSellerListingForm = () => {
+          editingListingId = null;
+          sellerListingForm.reset();
+          sellerListingSubmit.textContent = "Submit listing for review";
+          sellerListingCancelEdit.hidden = true;
+        };
+
+        loadSellerListings().catch(error => {
+          sellerListingList.textContent = error.message;
+        });
+        sellerListingForm.addEventListener("submit", async event => {
+          event.preventDefault();
+          const data = {
+            title: document.getElementById("sellerListingTitle").value.trim(),
+            description: document.getElementById("sellerListingDescription").value.trim(),
+            category: document.getElementById("sellerListingCategory").value,
+            county: document.getElementById("sellerListingCounty").value.trim(),
+            price: Number(document.getElementById("sellerListingPrice").value),
+            condition: document.getElementById("sellerListingCondition").value,
+            imageUrl: document.getElementById("sellerListingImage").value.trim() || null
+          };
+          const wasEditing = Boolean(editingListingId);
+          sellerListingSubmit.disabled = true;
+          try {
+            await window.GNK.apiRequest(
+              editingListingId ? `/listings/${editingListingId}` : "/listings",
+              { method: editingListingId ? "PATCH" : "POST", body: JSON.stringify(data) }
+            );
+            resetSellerListingForm();
+            showSellerListingMessage(wasEditing
+              ? "Listing updated and sent for review."
+              : "Listing submitted for review.");
+            await loadSellerListings();
+          } catch (error) {
+            showSellerListingMessage(error.message, true);
+          } finally {
+            sellerListingSubmit.disabled = false;
+          }
+        });
+        sellerListingCancelEdit.addEventListener("click", resetSellerListingForm);
+        sellerListingList.addEventListener("click", async event => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          try {
+            if (button.dataset.deleteListing) {
+              if (!window.confirm("Remove this marketplace listing?")) return;
+              await window.GNK.apiRequest(`/listings/${button.dataset.deleteListing}`, { method: "DELETE" });
+              showSellerListingMessage("Listing removed.");
+              await loadSellerListings();
+            } else if (button.dataset.editListing) {
+              const listings = await loadSellerListings();
+              const listing = listings.find(item => item.id === Number(button.dataset.editListing));
+              if (!listing) throw new Error("That listing is no longer available.");
+              editingListingId = listing.id;
+              document.getElementById("sellerListingTitle").value = listing.title;
+              document.getElementById("sellerListingDescription").value = listing.description;
+              document.getElementById("sellerListingCategory").value = listing.category;
+              document.getElementById("sellerListingCounty").value = listing.county;
+              document.getElementById("sellerListingPrice").value = listing.price;
+              document.getElementById("sellerListingCondition").value = listing.condition;
+              document.getElementById("sellerListingImage").value = listing.imageUrl || "";
+              sellerListingSubmit.textContent = "Save changes for review";
+              sellerListingCancelEdit.hidden = false;
+              document.getElementById("sellerListingTitle").focus();
+            }
+          } catch (error) {
+            showSellerListingMessage(error.message, true);
+          }
+        });
+
+      }
+
+      function renderAdminDashboard() {
+        const primaryPanel = document.getElementById("primaryPanel");
+        const secondaryPanel = document.getElementById("secondaryPanel");
+        document.getElementById("dashboardIntro").textContent =
+          "Manage accounts and review seller marketplace listings from the Super Admin control centre.";
+        document.getElementById("statsGrid").innerHTML = "";
+        primaryPanel.innerHTML = `
+          <div class="panel">
+            <div class="panel-header"><h2>User and administrator management</h2></div>
+            <div class="form-group"><label for="adminUserSearch">Search accounts</label>
+              <input id="adminUserSearch" type="search" placeholder="Name or email" /></div>
+            <div id="adminUserMessage" role="status"></div>
+            <div class="table-wrapper"><table class="request-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="adminUsersBody"><tr><td colspan="5">Loading accounts…</td></tr></tbody>
+            </table></div>
+          </div>`;
+        primaryPanel.insertAdjacentHTML("beforeend", `
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Marketplace listing review</h2>
+              <select id="adminListingStatus" aria-label="Filter listings by status">
+                <option value="pending">Pending review</option>
+                <option value="published">Published</option>
+                <option value="rejected">Rejected</option>
+                <option value="all">All listings</option>
+              </select>
+            </div>
+            <p id="adminListingMessage" role="status" aria-live="polite"></p>
+            <div id="adminListingQueue" class="request-list">Loading listings…</div>
+          </div>`);
+        primaryPanel.insertAdjacentHTML("beforeend", `
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Business directory review</h2>
+              <select id="adminBusinessStatus" aria-label="Filter businesses by status">
+                <option value="pending">Pending review</option>
+                <option value="published">Published</option>
+                <option value="rejected">Rejected</option>
+                <option value="all">All businesses</option>
+              </select>
+            </div>
+            <p id="adminBusinessMessage" role="status" aria-live="polite"></p>
+            <div id="adminBusinessQueue" class="request-list">Loading businesses…</div>
+          </div>`);
+        primaryPanel.insertAdjacentHTML("beforeend", `
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Advertising review</h2>
+              <select id="adminAdvertStatus" aria-label="Filter adverts by status">
+                <option value="pending">Pending review</option>
+                <option value="published">Published</option>
+                <option value="rejected">Rejected</option>
+                <option value="all">All adverts</option>
+              </select>
+            </div>
+            <p id="adminAdvertMessage" role="status" aria-live="polite"></p>
+            <div id="adminAdvertQueue" class="request-list">Loading adverts…</div>
+          </div>`);
+        secondaryPanel.innerHTML = `
+          <div class="panel">
+            <div class="panel-header"><h2>Create account</h2></div>
+            <form class="video-form" id="adminCreateUserForm">
+              <input id="adminNewName" type="text" placeholder="Full name" minlength="2" maxlength="100" required />
+              <input id="adminNewEmail" type="email" placeholder="Email address" required />
+              <input id="adminNewPassword" type="password" placeholder="Temporary password (12+ characters)" minlength="12" required />
+              <select id="adminNewRole"><option value="admin">Administrator</option><option value="user">User</option><option value="advertiser">Advertiser</option></select>
+              <button class="primary-btn" type="submit">Create account</button>
+            </form>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Advertising packages</h2></div>
+            <form class="video-form" id="adminPackageForm">
+              <input id="adminPackageName" type="text" placeholder="Package name" minlength="2" maxlength="100" required />
+              <textarea id="adminPackageDescription" placeholder="Description" maxlength="1000"></textarea>
+              <input id="adminPackagePrice" type="number" placeholder="Price (KES)" min="0" max="100000000" step="1" required />
+              <input id="adminPackageDuration" type="number" placeholder="Duration in days" min="1" max="3650" required />
+              <select id="adminPackagePlacement" required><option value="standard">Standard</option><option value="featured">Featured</option><option value="banner">Banner</option></select>
+              <input id="adminPackageFeatures" type="text" placeholder="Features, separated by commas" />
+              <button class="primary-btn" id="adminPackageSubmit" type="submit">Create package</button>
+              <button class="secondary-btn" id="adminPackageCancel" type="button" hidden>Cancel edit</button>
+            </form>
+            <p id="adminPackageMessage" role="status" aria-live="polite"></p>
+            <div id="adminPackageList" class="request-list">Loading packages…</div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Payment requests</h2></div>
+            <p class="meta">Payment records are read-only here. Advert payment status can only be confirmed by a configured, verified payment provider.</p>
+            <div id="adminPaymentList" class="request-list">Loading payments…</div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Recent admin activity</h2></div>
+            <div id="adminAuditLog" class="request-list">Loading audit log…</div>
+          </div>
+          `;
+
+        const messageBox = document.getElementById("adminUserMessage");
+        const showAdminMessage = (text, isError = false) => {
+          messageBox.textContent = text;
+          messageBox.style.color = isError ? "#b42318" : "#0f766e";
+        };
+        const loadUsers = async (search = "") => {
+          const result = await adminRequest(`/admin/users?q=${encodeURIComponent(search)}`);
+          document.getElementById("adminUsersBody").innerHTML = result.users.length
+            ? result.users.map(user => `
+              <tr data-admin-user-row="${user.id}">
+                <td>${escapeHTML(user.name)}</td><td>${escapeHTML(user.email)}</td>
+                <td><select data-user-role="${user.id}" ${user.role === "super_admin" ? "disabled" : ""}>
+                  ${user.role === "super_admin" ? '<option value="super_admin" selected>super_admin</option>' : ""}
+                  ${["user", "advertiser", "admin"].map(role => `<option value="${role}" ${role === user.role ? "selected" : ""}>${escapeHTML(role)}</option>`).join("")}
+                </select></td>
+                <td>${user.isActive ? "Active" : "Suspended"}</td>
+                <td>
+                  ${user.role === "super_admin" ? "Protected account" : `
+                    <button class="secondary-btn" type="button" data-save-user="${user.id}">Save role</button>
+                    <button class="ghost-btn" type="button" data-toggle-user="${user.id}" data-active="${user.isActive}">${user.isActive ? "Suspend" : "Activate"}</button>
+                    <button class="ghost-btn" type="button" data-delete-user="${user.id}">Delete</button>`}
+                </td>
+              </tr>`).join("")
+            : `<tr><td colspan="5">No matching accounts.</td></tr>`;
+        };
+        const adminListingMessage = document.getElementById("adminListingMessage");
+        const showListingMessage = (text, isError = false) => {
+          adminListingMessage.textContent = text;
+          adminListingMessage.style.color = isError ? "#b42318" : "#0f766e";
+        };
+        const loadListingQueue = async () => {
+          const status = document.getElementById("adminListingStatus").value;
+          const result = await adminRequest(`/admin/listings?status=${encodeURIComponent(status)}`);
+          const queue = document.getElementById("adminListingQueue");
+          queue.innerHTML = result.listings.length
+            ? result.listings.map(listing => `
+              <article class="request-item">
+                <div class="item-top"><h3>${escapeHTML(listing.title)}</h3>
+                  <span class="status ${escapeHTML(listing.status)}">${escapeHTML(listing.status)}</span></div>
+                <p class="meta">${escapeHTML(listing.seller?.name || "Seller")} · ${escapeHTML(listing.seller?.email || "")} · ${escapeHTML(listing.county)}</p>
+                <p class="meta">KES ${Number(listing.price).toLocaleString("en-KE")} · ${escapeHTML(listing.condition)} · ${escapeHTML(listing.category)}</p>
+                <p>${escapeHTML(listing.description)}</p>
+                ${listing.status === "pending" ? `<div class="actions">
+                  <button class="primary-btn" type="button" data-review-listing="${listing.id}" data-review-status="published">Publish</button>
+                  <button class="ghost-btn" type="button" data-review-listing="${listing.id}" data-review-status="rejected">Reject</button>
+                </div>` : ""}
+              </article>`).join("")
+            : '<div class="empty-state">No listings in this queue.</div>';
+        };
+        const businessMessage = document.getElementById("adminBusinessMessage");
+        const showBusinessMessage = (text, isError = false) => {
+          businessMessage.textContent = text;
+          businessMessage.style.color = isError ? "#b42318" : "#0f766e";
+        };
+        const loadBusinessQueue = async () => {
+          const status = document.getElementById("adminBusinessStatus").value;
+          const result = await adminRequest(`/admin/businesses?status=${encodeURIComponent(status)}`);
+          const queue = document.getElementById("adminBusinessQueue");
+          queue.innerHTML = result.businesses.length
+            ? result.businesses.map(business => `
+              <article class="request-item">
+                <div class="item-top"><h3>${escapeHTML(business.name)}</h3>
+                  <span class="status ${escapeHTML(business.status)}">${escapeHTML(business.status)}</span></div>
+                <p class="meta">${escapeHTML(business.owner?.name || "Business owner")} · ${escapeHTML(business.owner?.email || "")} · ${escapeHTML(business.county)}</p>
+                <p class="meta">${escapeHTML(business.category)}${business.phone ? ` · ${escapeHTML(business.phone)}` : ""}</p>
+                <p>${escapeHTML(business.description)}</p>
+                ${business.status === "pending" ? `<div class="actions">
+                  <button class="primary-btn" type="button" data-review-business="${business.id}" data-review-status="published">Publish</button>
+                  <button class="ghost-btn" type="button" data-review-business="${business.id}" data-review-status="rejected">Reject</button>
+                </div>` : ""}
+              </article>`).join("")
+            : '<div class="empty-state">No businesses in this queue.</div>';
+        };
+        const showAdvertMessage = (text, isError = false) => {
+          const element = document.getElementById("adminAdvertMessage");
+          element.textContent = text;
+          element.style.color = isError ? "#b42318" : "#0f766e";
+        };
+        const loadAdvertQueue = async () => {
+          const status = document.getElementById("adminAdvertStatus").value;
+          const result = await adminRequest(`/admin/adverts?status=${encodeURIComponent(status)}`);
+          const queue = document.getElementById("adminAdvertQueue");
+          queue.innerHTML = result.adverts.length
+            ? result.adverts.map(advert => {
+              const isPaid = !advert.packageId || advert.payments.some(payment => payment.status === "successful");
+              return `
+                <article class="request-item">
+                  <div class="item-top"><h3>${escapeHTML(advert.title)}</h3>
+                    <span class="status ${escapeHTML(advert.status)}">${escapeHTML(advert.status)}</span></div>
+                  <p class="meta">${escapeHTML(advert.business?.name || "Business")} · ${escapeHTML(advert.business?.owner?.email || "")} · ${escapeHTML(advert.package?.name || "Unpackaged advert")}</p>
+                  <p>${escapeHTML(advert.description || "")}</p>
+                  ${advert.status === "pending" ? `<div class="actions">
+                    <button class="primary-btn" type="button" data-review-advert="${advert.id}" data-review-status="published" ${isPaid ? "" : "disabled"}>Publish</button>
+                    <button class="ghost-btn" type="button" data-review-advert="${advert.id}" data-review-status="rejected">Reject</button>
+                    ${isPaid ? "" : '<span class="meta">Payment must be verified before publishing.</span>'}
+                  </div>` : ""}
+                </article>`;
+            }).join("")
+            : '<div class="empty-state">No adverts in this queue.</div>';
+        };
+        const loadPackages = async () => {
+          const result = await adminRequest("/admin/packages");
+          const list = document.getElementById("adminPackageList");
+          list.innerHTML = result.packages.length
+            ? result.packages.map(item => `
+              <article class="request-item">
+                <div class="item-top"><h3>${escapeHTML(item.name)}</h3>
+                  <span class="status ${item.isActive ? "published" : "rejected"}">${item.isActive ? "active" : "inactive"}</span></div>
+                <p class="meta">${escapeHTML(item.currency)} ${Number(item.price).toLocaleString("en-KE")} · ${item.durationDays} days · ${escapeHTML(item.placement)}</p>
+                <div class="actions">
+                  <button class="secondary-btn" type="button" data-edit-package="${item.id}">Edit</button>
+                  ${item.isActive ? `<button class="ghost-btn" type="button" data-deactivate-package="${item.id}">Deactivate</button>` : ""}
+                </div>
+              </article>`).join("")
+            : '<div class="empty-state">No packages configured.</div>';
+          return result.packages;
+        };
+        const loadPaymentRequests = async () => {
+          const result = await adminRequest("/admin/payments");
+          const list = document.getElementById("adminPaymentList");
+          list.innerHTML = result.payments.length
+            ? result.payments.map(payment => `
+              <article class="request-item">
+                <div class="item-top"><h3>${escapeHTML(payment.package?.name || "Payment request")}</h3>
+                  <span class="status ${escapeHTML(payment.status)}">${escapeHTML(payment.status)}</span></div>
+                <p class="meta">${escapeHTML(payment.user?.email || "Account")} · ${escapeHTML(payment.currency)} ${Number(payment.amount).toLocaleString("en-KE")} · ${escapeHTML(payment.phone || "")}</p>
+              </article>`).join("")
+            : '<div class="empty-state">No payment requests.</div>';
+        };
+        const loadAdminData = async () => {
+          const [overview, audit] = await Promise.all([
+            adminRequest("/admin/overview"),
+            adminRequest("/admin/audit-logs")
+          ]);
+          const data = overview.overview;
+          document.getElementById("statsGrid").innerHTML = `
+            <article class="stat-card"><div class="label">Total users</div><div class="value">${data.totalUsers}</div></article>
+            <article class="stat-card"><div class="label">Active users</div><div class="value">${data.activeUsers}</div></article>
+            <article class="stat-card"><div class="label">Suspended users</div><div class="value">${data.inactiveUsers}</div></article>
+            <article class="stat-card"><div class="label">Administrators</div><div class="value">${data.usersByRole.admin || 0}</div></article>`;
+          document.getElementById("adminAuditLog").innerHTML = audit.logs.length
+            ? audit.logs.map(log => `<article class="request-item"><strong>${escapeHTML(log.action)}</strong><p class="meta">${escapeHTML(log.details)} · ${new Date(log.createdAt).toLocaleString()}</p></article>`).join("")
+            : "No admin actions recorded yet.";
+          await loadUsers();
+          await loadListingQueue();
+          await loadBusinessQueue();
+          await loadAdvertQueue();
+          await loadPackages();
+          await loadPaymentRequests();
+        };
+
+        loadAdminData().catch(error => showAdminMessage(error.message, true));
+        document.getElementById("adminListingStatus").addEventListener("change", () => {
+          loadListingQueue().catch(error => showListingMessage(error.message, true));
+        });
+        document.getElementById("adminBusinessStatus").addEventListener("change", () => {
+          loadBusinessQueue().catch(error => showBusinessMessage(error.message, true));
+        });
+        document.getElementById("adminAdvertStatus").addEventListener("change", () => {
+          loadAdvertQueue().catch(error => showAdvertMessage(error.message, true));
+        });
+        document.getElementById("adminBusinessQueue").addEventListener("click", async event => {
+          const button = event.target.closest("[data-review-business]");
+          if (!button) return;
+          button.disabled = true;
+          try {
+            await adminRequest(`/admin/businesses/${button.dataset.reviewBusiness}/review`, {
+              method: "PATCH",
+              body: JSON.stringify({ status: button.dataset.reviewStatus })
+            });
+            showBusinessMessage(`Business ${button.dataset.reviewStatus}.`);
+            await loadBusinessQueue();
+          } catch (error) {
+            showBusinessMessage(error.message, true);
+          } finally {
+            button.disabled = false;
+          }
+        });
+        document.getElementById("adminListingQueue").addEventListener("click", async event => {
+          const button = event.target.closest("[data-review-listing]");
+          if (!button) return;
+          button.disabled = true;
+          try {
+            await adminRequest(`/admin/listings/${button.dataset.reviewListing}/review`, {
+              method: "PATCH",
+              body: JSON.stringify({ status: button.dataset.reviewStatus })
+            });
+            document.getElementById("adminAdvertQueue").addEventListener("click", async event => {
+              const button = event.target.closest("[data-review-advert]");
+              if (!button) return;
+              button.disabled = true;
+              try {
+                await adminRequest(`/admin/adverts/${button.dataset.reviewAdvert}/review`, {
+                  method: "PATCH",
+                  body: JSON.stringify({ status: button.dataset.reviewStatus })
+                });
+                showAdvertMessage(`Advert ${button.dataset.reviewStatus}.`);
+                await loadAdvertQueue();
+                await loadAdminData();
+              } catch (error) {
+                showAdvertMessage(error.message, true);
+              } finally {
+                button.disabled = false;
+              }
+            });
+            let editingPackageId = null;
+            const packageForm = document.getElementById("adminPackageForm");
+            const packageMessage = document.getElementById("adminPackageMessage");
+            const packageSubmit = document.getElementById("adminPackageSubmit");
+            const packageCancel = document.getElementById("adminPackageCancel");
+            const showPackageMessage = (text, isError = false) => {
+              packageMessage.textContent = text;
+              packageMessage.style.color = isError ? "#b42318" : "#0f766e";
+            };
+            const resetPackageForm = () => {
+              editingPackageId = null;
+              packageForm.reset();
+              packageSubmit.textContent = "Create package";
+              packageCancel.hidden = true;
+            };
+            packageForm.addEventListener("submit", async event => {
+              event.preventDefault();
+              packageSubmit.disabled = true;
+              const data = {
+                name: document.getElementById("adminPackageName").value.trim(),
+                description: document.getElementById("adminPackageDescription").value.trim(),
+                price: Number(document.getElementById("adminPackagePrice").value),
+                durationDays: Number(document.getElementById("adminPackageDuration").value),
+                placement: document.getElementById("adminPackagePlacement").value,
+                features: document.getElementById("adminPackageFeatures").value.split(",").map(value => value.trim()).filter(Boolean)
+              };
+              try {
+                await adminRequest(editingPackageId ? `/admin/packages/${editingPackageId}` : "/admin/packages", {
+                  method: editingPackageId ? "PATCH" : "POST",
+                  body: JSON.stringify(data)
+                });
+                showPackageMessage(editingPackageId ? "Package updated." : "Package created.");
+                resetPackageForm();
+                await loadPackages();
+              } catch (error) {
+                showPackageMessage(error.message, true);
+              } finally {
+                packageSubmit.disabled = false;
+              }
+            });
+            packageCancel.addEventListener("click", resetPackageForm);
+            document.getElementById("adminPackageList").addEventListener("click", async event => {
+              const button = event.target.closest("button");
+              if (!button) return;
+              try {
+                if (button.dataset.deactivatePackage) {
+                  if (!window.confirm("Deactivate this package? Existing payment records will remain.")) return;
+                  await adminRequest(`/admin/packages/${button.dataset.deactivatePackage}`, { method: "DELETE" });
+                  showPackageMessage("Package deactivated.");
+                  await loadPackages();
+                } else if (button.dataset.editPackage) {
+                  const packages = await loadPackages();
+                  const item = packages.find(entry => entry.id === Number(button.dataset.editPackage));
+                  if (!item) throw new Error("Package no longer exists.");
+                  editingPackageId = item.id;
+                  document.getElementById("adminPackageName").value = item.name;
+                  document.getElementById("adminPackageDescription").value = item.description || "";
+                  document.getElementById("adminPackagePrice").value = item.price;
+                  document.getElementById("adminPackageDuration").value = item.durationDays;
+                  document.getElementById("adminPackagePlacement").value = item.placement;
+                  document.getElementById("adminPackageFeatures").value = JSON.parse(item.features || "[]").join(", ");
+                  packageSubmit.textContent = "Save package";
+                  packageCancel.hidden = false;
+                }
+              } catch (error) {
+                showPackageMessage(error.message, true);
+              }
+            });
+            showListingMessage(`Listing ${button.dataset.reviewStatus}.`);
+            await loadListingQueue();
+          } catch (error) {
+            showListingMessage(error.message, true);
+          } finally {
+            button.disabled = false;
+          }
+        });
+        document.getElementById("adminUserSearch").addEventListener("input", event => {
+          loadUsers(event.target.value).catch(error => showAdminMessage(error.message, true));
+        });
+        document.getElementById("adminCreateUserForm").addEventListener("submit", async event => {
+          event.preventDefault();
+          const button = event.currentTarget.querySelector("button[type=submit]");
+          button.disabled = true;
+          try {
+            await adminRequest("/admin/users", {
+              method: "POST",
+              body: JSON.stringify({
+                name: document.getElementById("adminNewName").value.trim(),
+                email: document.getElementById("adminNewEmail").value.trim(),
+                password: document.getElementById("adminNewPassword").value,
+                role: document.getElementById("adminNewRole").value
+              })
+            });
+            event.currentTarget.reset();
+            showAdminMessage("Account created.");
+            await loadAdminData();
+          } catch (error) {
+            showAdminMessage(error.message, true);
+          } finally {
+            button.disabled = false;
+          }
+        });
+        document.getElementById("adminUsersBody").addEventListener("click", async event => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          const id = button.dataset.saveUser || button.dataset.toggleUser || button.dataset.deleteUser;
+          if (!id) return;
+          try {
+            if (button.dataset.deleteUser) {
+              if (!window.confirm("Permanently delete this account? This cannot be undone.")) return;
+              await adminRequest(`/admin/users/${id}`, { method: "DELETE" });
+            } else if (button.dataset.toggleUser) {
+              await adminRequest(`/admin/users/${id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ isActive: button.dataset.active !== "true" })
+              });
+            } else {
+              const role = document.querySelector(`[data-user-role="${id}"]`).value;
+              await adminRequest(`/admin/users/${id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ role })
+              });
+            }
+            showAdminMessage("Account updated.");
+            await loadAdminData();
+          } catch (error) {
+            showAdminMessage(error.message, true);
+          }
+        });
+      }
+
+      function renderDashboard() {
+        const user = ensureAccess();
+        if (!user) return;
+
+        const role = user.role === "super_admin" ? "super_admin" : user.role === "admin" ? "admin" : "user";
+        document.getElementById("welcomeTitle").textContent = role === "super_admin"
+          ? `Welcome, ${user.name || "Super Admin"}`
+          : `Welcome, ${user.name || "User"}`;
+
+        document.getElementById("dashboardIntro").textContent = role === "super_admin"
+          ? "Manage user accounts and administrator access from one control centre."
+          : role === "admin"
+            ? "Review your account and the available network opportunities."
+          : "Review live market opportunities and send your advert request directly to the admin team.";
+
+        document.getElementById("roleBadge").textContent = ROLE_TEXT[role] || "User";
+
+        if (role === "super_admin") {
+          renderAdminDashboard();
+        } else {
+          renderStats();
+          renderStats();
+          renderUserDashboard(user).catch(error => {
+            document.getElementById("dashboardIntro").textContent = error.message || "Unable to load account data.";
+          });
+        }
+      }
+
+      function renderSuperAdminDemo() {
+        const pendingRequests = [
+          { id: 1, type: "Business", name: "Savanna Harvest Co.", owner: "Amina Wekesa", location: "Nakuru", age: "8 min ago", status: "Pending" },
+          { id: 2, type: "Property advert", name: "Kilimani 3-Bedroom Apartment", owner: "Brian Otieno", location: "Nairobi", age: "14 min ago", status: "Pending" },
+          { id: 3, type: "Business", name: "Coastline Solar Solutions", owner: "Fatuma Ali", location: "Mombasa", age: "21 min ago", status: "Pending" },
+          { id: 4, type: "Vehicle advert", name: "2019 Toyota Harrier", owner: "Peter Mwangi", location: "Kiambu", age: "29 min ago", status: "Pending" },
+          { id: 5, type: "Business", name: "Highland View Academy", owner: "Grace Njeri", location: "Nyeri", age: "42 min ago", status: "Pending" },
+          { id: 6, type: "Product advert", name: "Handmade Sisal Home Collection", owner: "Wanjiku Kamau", location: "Machakos", age: "55 min ago", status: "Pending" },
+          { id: 7, type: "Business", name: "Lakeview Medical Supplies", owner: "Daniel Ochieng", location: "Kisumu", age: "1 hr ago", status: "Pending" },
+          { id: 8, type: "Service advert", name: "Mwangaza Legal Services", owner: "Joyce Atieno", location: "Kakamega", age: "1 hr ago", status: "Pending" },
+          { id: 9, type: "Business", name: "Taita Fresh Foods", owner: "Mariam Juma", location: "Taita-Taveta", age: "2 hrs ago", status: "Pending" },
+          { id: 10, type: "School advert", name: "Bright Future Junior School", owner: "Samuel Kiptoo", location: "Uasin Gishu", age: "2 hrs ago", status: "Pending" },
+          { id: 11, type: "Business", name: "Northern Star Logistics", owner: "Hassan Noor", location: "Garissa", age: "3 hrs ago", status: "Pending" },
+          { id: 12, type: "Property advert", name: "Nyali Beachfront Guest House", owner: "Lucy Muthoni", location: "Mombasa", age: "3 hrs ago", status: "Pending" }
+        ];
+        const pendingRequestsNotShown = 6;
+
+        document.title = "Super Admin Demo | Global Network Kenya";
+        document.getElementById("logoutBtn").textContent = "Exit demo";
+        document.getElementById("welcomeTitle").textContent = "Super Admin Dashboard (Demo)";
+        document.getElementById("dashboardIntro").textContent =
+          "Preview with sample data. Approval actions affect this demo only; no real accounts, listings, adverts, or payments are changed.";
+        document.getElementById("roleBadge").textContent = "DEMO · SAMPLE DATA";
+        document.getElementById("packagePrompt").style.display = "none";
+        document.getElementById("statsGrid").innerHTML = `
+          <article class="stat-card"><div class="label">Registered users</div><div class="value">1,284</div></article>
+          <article class="stat-card"><div class="label">Active businesses</div><div class="value">346</div></article>
+          <article class="stat-card"><div class="label">Pending approvals</div><div class="value">18</div></article>
+          <article class="stat-card"><div class="label">Monthly payments</div><div class="value">KES 482K</div></article>`;
+        document.getElementById("primaryPanel").innerHTML = `
+          <div class="panel">
+            <div class="panel-header"><h2>Platform overview</h2><span class="pill">Sample data</span></div>
+            <div class="market-list">
+              <article class="market-item"><div class="item-top"><h3>User &amp; administrator management</h3><span class="tag">1,284 users</span></div><p>Review accounts, roles, access status, and administrator activity.</p><span class="status active">Preview only</span></article>
+              <article class="market-item"><div class="item-top"><h3>Business registrations</h3><span class="tag">7 awaiting review</span></div><p>Review business profiles and publication requests across counties.</p><span class="status pending">Preview only</span></article>
+              <article class="market-item"><div class="item-top"><h3>Advertisements</h3><span class="tag">11 pending</span></div><p>Oversee adverts for products, services, property, schools, and vehicles.</p><span class="status pending">Preview only</span></article>
+              <article class="market-item"><div class="item-top"><h3>Payments &amp; disputes</h3><span class="tag">KES 482K this month</span></div><p>Review example transactions and payment status. Refund actions are not enabled.</p><span class="status review">Preview only</span></article>
+              <article class="market-item"><div class="item-top"><h3>Packages &amp; platform settings</h3><span class="tag">4 sample packages</span></div><p>Preview categories, counties, package configuration, reports, and security settings.</p><span class="status active">Preview only</span></article>
+            </div>
+          </div>`;
+        document.getElementById("secondaryPanel").innerHTML = `
+          <div class="panel">
+            <div class="panel-header"><h2>Recent activity</h2><span class="pill">Examples</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>New business submitted</h3><span class="status pending">Pending</span></div><p class="meta">Sample Business · Nairobi · 12 min ago</p></article>
+              <article class="request-item"><div class="item-top"><h3>Advert awaiting approval</h3><span class="status pending">Pending</span></div><p class="meta">Sample Property Listing · 38 min ago</p></article>
+              <article class="request-item"><div class="item-top"><h3>Payment received</h3><span class="status approved">Complete</span></div><p class="meta">KES 5,000 · Sample transaction · Today</p></article>
+              <article class="request-item"><div class="item-top"><h3>Platform report</h3><span class="status review">Preview</span></div><p class="meta">All values shown on this page are illustrative only.</p></article>
+            </div>
+          </div>`;
+        document.getElementById("secondaryPanel").insertAdjacentHTML("beforeend", `
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header">
+              <h2>Requests waiting for approval</h2>
+              <span class="pill" id="demoPendingCount">18 pending</span>
+            </div>
+            <p class="meta" style="margin-bottom:14px">Showing 12 of 18 sample requests. Approve/reject actions update the preview only; they do not change real submissions.</p>
+            <div class="request-list" id="demoPendingRequests"></div>
+            <a class="primary-btn" style="display:inline-flex;margin-top:18px" href="pages/login.html">Return to login</a>
+          </div>`);
+
+        const renderPendingRequests = () => {
+          const shownPendingCount = pendingRequests.filter(request => request.status === "Pending").length;
+          const totalPendingCount = pendingRequestsNotShown + shownPendingCount;
+          document.getElementById("demoPendingCount").textContent = `${totalPendingCount} pending`;
+          document.querySelector("#statsGrid .stat-card:nth-child(3) .value").textContent = totalPendingCount;
+          document.getElementById("demoPendingRequests").innerHTML = pendingRequests.map(request => `
+            <article class="request-item">
+              <div class="item-top">
+                <h3>${escapeHTML(request.name)}</h3>
+                <span class="status ${request.status.toLowerCase()}">${escapeHTML(request.status)}</span>
+              </div>
+              <p class="meta">${escapeHTML(request.type)} · ${escapeHTML(request.owner)} · ${escapeHTML(request.location)} · ${escapeHTML(request.age)}</p>
+              ${request.status === "Pending" ? `
+                <div class="actions">
+                  <button class="secondary-btn" type="button" data-demo-request-action="Approved" data-demo-request-id="${request.id}">Approve</button>
+                  <button class="ghost-btn" type="button" data-demo-request-action="Rejected" data-demo-request-id="${request.id}">Reject</button>
+                </div>` : ""}
+            </article>`).join("");
+        };
+
+        document.getElementById("demoPendingRequests").addEventListener("click", event => {
+          const button = event.target.closest("[data-demo-request-action]");
+          if (!button) return;
+
+          const request = pendingRequests.find(item => item.id === Number(button.dataset.demoRequestId));
+          if (!request || request.status !== "Pending") return;
+
+          request.status = button.dataset.demoRequestAction;
+          renderPendingRequests();
+        });
+
+        renderPendingRequests();
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (new URLSearchParams(window.location.search).get("demo") === "super-admin") {
+          window.location.href = "pages/login.html";
+          return;
+        }
+        window.GNK.logout();
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        showPackagePromptIfNeeded();
+        if (new URLSearchParams(window.location.search).get("demo") === "super-admin") {
+          renderSuperAdminDemo();
+          return;
+        }
+
+        loadAuthenticatedUser().then(user => {
+          if (!user) {
+            window.GNK.clearSession();
+            window.location.href = "pages/login.html";
+            return;
+          }
+
+          authenticatedUser = user;
+          writeJson("gnk_user", user);
+          renderDashboard();
+        }).catch(error => {
+          document.getElementById("welcomeTitle").textContent = "Unable to load dashboard";
+          document.getElementById("dashboardIntro").textContent = error.message;
+        });
+      });
+    </script>
+  </body>
+</html>

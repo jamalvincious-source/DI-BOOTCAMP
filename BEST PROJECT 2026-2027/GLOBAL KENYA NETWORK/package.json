@@ -1,0 +1,20 @@
+
+{
+  "name": "global-network-kenya",
+  "version": "1.0.0",
+  "description": "Business advertising platform",
+  "main": "js/backend/crc/server.js",
+  "scripts": {
+    "start": "node js/backend/crc/server.js",
+    "dev": "nodemon js/backend/crc/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

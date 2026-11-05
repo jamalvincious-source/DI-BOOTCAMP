@@ -1,0 +1,200 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Global Network Kenya</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f6fc;
+            color: #172b4d;
+        }
+
+        header {
+            padding: 20px 5%;
+            background: white;
+            border-bottom: 1px solid #e0e6ef;
+        }
+
+        header a {
+            color: #155eef;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        main {
+            width: min(420px, 92%);
+            margin: 55px auto;
+            padding: 28px;
+            background: white;
+            border: 1px solid #e0e6ef;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .05);
+        }
+
+        h1 { margin-top: 0; }
+
+        p { color: #667085; }
+
+        label {
+            display: block;
+            margin: 16px 0 6px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 22px;
+            border: 0;
+            border-radius: 8px;
+            background: #155eef;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled { opacity: .65; }
+
+        .message {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .message.show { display: block; }
+        .error { background: #fef3f2; color: #b42318; }
+        .success { background: #ecfdf3; color: #067647; }
+
+        .register-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .register-link a { color: #155eef; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="../index.html">Global Network Kenya</a>
+    </header>
+
+    <main>
+        <h1>Welcome back</h1>
+        <p>Log in to manage your business and advertisements.</p>
+
+        <form id="loginForm">
+            <label for="email">Email address</label>
+            <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" id="loginButton">Log In</button>
+        </form>
+
+        <div id="message" class="message" role="status"
+             aria-live="polite"></div>
+
+        <div class="register-link">
+            Don't have an account?
+            <a href="register.html">Register here</a>
+        </div>
+    </main>
+
+    <script>
+        "use strict";
+
+        const API_URL = "http://localhost:3000/api/auth/login";
+
+        const form = document.getElementById("loginForm");
+        const button = document.getElementById("loginButton");
+        const message = document.getElementById("message");
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message show ${type}`;
+        }
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            button.disabled = true;
+            button.textContent = "Logging in...";
+            message.className = "message";
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.token) {
+                    throw new Error(data.message || "Login failed.");
+                }
+
+                sessionStorage.setItem("gnk_token", data.token);
+
+                if (data.user) {
+                    sessionStorage.setItem(
+                        "gnk_user",
+                        JSON.stringify(data.user)
+                    );
+                }
+
+                showMessage("Login successful. Opening your business page...", "success");
+
+                window.location.href = "business.html";
+            } catch (error) {
+                showMessage(
+                    error.message || "Unable to log in. Check your connection.",
+                    "error"
+                );
+            } finally {
+                button.disabled = false;
+                button.textContent = "Log In";
+            }
+        });
+    </script>
+</body>
+</html>
+```
