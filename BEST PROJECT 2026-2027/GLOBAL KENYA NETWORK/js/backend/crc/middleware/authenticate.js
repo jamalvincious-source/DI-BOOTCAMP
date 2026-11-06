@@ -2,23 +2,15 @@
 
 const jwt = require("jsonwebtoken");
 const { prisma } = require("../config/database");
+const { getAuthToken } = require("../config/auth-cookie");
 
 async function authenticateToken(req, res, next) {
-    const authorization = req.headers.authorization;
-
-    if (!authorization || !authorization.startsWith("Bearer ")) {
-        return res.status(401).json({
-            success: false,
-            message: "Authentication required. Please log in."
-        });
-    }
-
-    const token = authorization.slice(7).trim();
+    const token = getAuthToken(req);
 
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: "Authentication token is missing."
+            message: "Authentication required. Please log in."
         });
     }
 

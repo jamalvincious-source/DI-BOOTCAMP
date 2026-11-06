@@ -8,9 +8,9 @@ const jwt = require("jsonwebtoken");
 const { z } = require("zod");
 const { prisma } = require("../../database");
 const { authenticateToken } = require("../../../middleware/authenticate");
+const { clearAuthCookie, sessionLifetime, setAuthCookie } = require("../../auth-cookie");
 
 const router = express.Router();
-const JWT_EXPIRES_IN = "2h";
 const BCRYPT_ROUNDS = 12;
 const CODE_TTL_MS = 10 * 60 * 1000;
 const CODE_RESEND_DELAY_MS = 60 * 1000;
@@ -29,7 +29,8 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
     email: z.string().trim().email().max(254),
-    password: z.string().min(1).max(72)
+    password: z.string().min(1).max(72),
+    rememberMe: z.boolean().optional().default(false)
 });
 
 const requestCodeSchema = z.object({
@@ -109,7 +110,7 @@ function toPublicUser(user) {
     };
 }
 
-function createToken(user) {
+function createToken(user, rememberMe = false) {
     if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
         throw new Error("JWT_SECRET must be configured with at least 32 characters.");
     }
@@ -121,7 +122,7 @@ function createToken(user) {
         },
         process.env.JWT_SECRET,
         {
-            expiresIn: JWT_EXPIRES_IN,
+            expiresIn: sessionLifetime(rememberMe),
             issuer: "global-network-kenya",
             audience: "global-network-kenya-users"
         }
@@ -144,6 +145,10 @@ router.post("/register", async (req, res, next) => {
         }
 
         const email = parsed.data.email.toLowerCase();
+
+        if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+            throw new Error("JWT_SECRET must be configured with at least 32 characters.");
+        }
 
         const existingUser = await prisma.user.findUnique({
             where: { email }
@@ -175,6 +180,9 @@ router.post("/register", async (req, res, next) => {
                 createdAt: true
             }
         });
+
+        const token = createToken(user);
+        setAuthCookie(res, token);
 
         return res.status(201).json({
             success: true,
@@ -226,18 +234,26 @@ router.post("/login", async (req, res, next) => {
         }
 
         const user = toPublicUser(userRecord);
-        const token = createToken(user);
+        const token = createToken(user, parsed.data.rememberMe);
+        setAuthCookie(res, token, parsed.data.rememberMe);
 
         return res.status(200).json({
             success: true,
             message: "Login successful.",
-            token,
-            expiresIn: JWT_EXPIRES_IN,
+            expiresIn: sessionLifetime(parsed.data.rememberMe),
             user
         });
     } catch (error) {
         next(error);
     }
+});
+
+router.post("/logout", (_req, res) => {
+    clearAuthCookie(res);
+    return res.status(200).json({
+        success: true,
+        message: "You have been logged out."
+    });
 });
 
 router.post("/forgot-password", async (req, res, next) => {

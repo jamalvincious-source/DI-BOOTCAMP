@@ -1,6 +1,10 @@
 "use strict";
 
-require("dotenv").config();
+const path = require("path");
+
+require("dotenv").config({
+    path: path.resolve(__dirname, "../../../../.env")
+});
 
 if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is required. Configure a PostgreSQL connection string in .env.");

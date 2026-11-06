@@ -24,8 +24,10 @@ test("Express mounts the Prisma-backed API routes used by the frontend", async (
 
         const cases = [
             { path: "/auth/register", method: "POST", body: {}, status: 400 },
+            { path: "/auth/logout", method: "POST", status: 200 },
             { path: "/businesses?page=0", status: 400 },
             { path: "/adverts?placement=invalid", status: 400 },
+            { path: `/adverts?category=${"x".repeat(101)}`, status: 400 },
             { path: "/listings?sort=invalid", status: 400 },
             { path: "/packages/not-a-number", status: 400 },
             { path: "/payments/mine", status: 401 },
@@ -41,6 +43,9 @@ test("Express mounts the Prisma-backed API routes used by the frontend", async (
                 } : {})
             });
             assert.equal(response.status, route.status, `${route.method || "GET"} ${route.path}`);
+            if (route.path === "/auth/logout") {
+                assert.match(response.headers.get("set-cookie") || "", /gnk_session=;/);
+            }
         }
     } finally {
         await new Promise((resolve, reject) => {

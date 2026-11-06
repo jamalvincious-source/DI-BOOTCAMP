@@ -215,6 +215,47 @@
         padding: 16px;
       }
 
+      .advert-card img {
+        display: block;
+        width: 100%;
+        max-height: 220px;
+        margin: 0 0 14px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .rioba-showcase {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .rioba-showcase-card {
+        overflow: hidden;
+        border: 1px solid var(--gnk-border);
+        border-radius: 14px;
+        background: #fff;
+      }
+
+      .rioba-showcase-card img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1.65;
+        object-fit: cover;
+      }
+
+      .rioba-showcase-card h3 {
+        margin: 14px 14px 6px;
+        font-size: 1rem;
+      }
+
+      .rioba-showcase-card p {
+        margin: 0 14px 14px;
+        color: var(--gnk-muted);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
       .item-top {
         display: flex;
         justify-content: space-between;
@@ -355,6 +396,10 @@
         gap: 12px;
       }
 
+      #demoCampaignForm[hidden] {
+        display: none;
+      }
+
       .summary-card {
         background: linear-gradient(180deg, #ffffff, #f8fbff);
         border: 1px solid var(--gnk-border);
@@ -388,6 +433,11 @@
         .content-grid {
           grid-template-columns: 1fr;
         }
+
+        .rioba-showcase {
+          grid-template-columns: 1fr;
+        }
+
       }
 
       @media (max-width: 560px) {
@@ -400,6 +450,7 @@
           padding-left: 16px;
           padding-right: 16px;
         }
+
       }
     </style>
   </head>
@@ -536,6 +587,65 @@
         })[character]);
       }
 
+      function safeExternalUrl(value) {
+        if (typeof value !== "string" || !value.trim()) return "";
+
+        try {
+          const url = new URL(value);
+          return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+        } catch {
+          return "";
+        }
+      }
+
+      function renderAdvertCard(advert, showStatus = false) {
+        const imageUrl = safeExternalUrl(advert.imageUrl);
+        const targetUrl = safeExternalUrl(advert.targetUrl);
+        const status = String(advert.status || "pending").toLowerCase();
+        const statusClass = ["pending", "published", "rejected"].includes(status) ? status : "pending";
+        const placement = String(advert.placement || "standard");
+        const businessName = advert.business?.name || "Business";
+
+        return `
+          <article class="request-item advert-card">
+            ${imageUrl ? `<img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(advert.title)}" loading="lazy">` : ""}
+            <div class="item-top">
+              <h3>${escapeHTML(advert.title)}</h3>
+              ${showStatus
+                ? `<span class="status ${statusClass}">${escapeHTML(advert.status || "Pending")}</span>`
+                : `<span class="tag">${escapeHTML(placement)} advert</span>`}
+            </div>
+            <p class="meta">${escapeHTML(businessName)}${advert.business?.county ? ` · ${escapeHTML(advert.business.county)}` : ""}</p>
+            ${advert.description ? `<p>${escapeHTML(advert.description)}</p>` : ""}
+            ${showStatus && advert.createdAt ? `<p class="meta">Submitted ${formatDateStamp(advert.createdAt)}</p>` : ""}
+            ${targetUrl
+              ? `<a class="secondary-btn" href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer">View advert</a>`
+              : '<span class="meta">No website link provided</span>'}
+          </article>`;
+      }
+
+      function renderHouseAdvertCard(advert) {
+        const imageUrl = safeExternalUrl(advert.imageUrl);
+        const targetUrl = safeExternalUrl(advert.targetUrl);
+
+        return `
+          <article class="request-item advert-card">
+            ${imageUrl ? `<img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(advert.title)}" loading="lazy">` : ""}
+            <div class="item-top">
+              <h3>${escapeHTML(advert.title)}</h3>
+              <span class="tag">${escapeHTML(advert.placement || "standard")} property advert</span>
+            </div>
+            <p class="meta">${escapeHTML(advert.business?.name || "Property advertiser")}${advert.business?.county ? ` · ${escapeHTML(advert.business.county)}` : ""}</p>
+            ${advert.description ? `<p>${escapeHTML(advert.description)}</p>` : ""}
+            <div class="actions">
+              ${targetUrl
+                ? `<a class="secondary-btn" href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer">View property</a>`
+                : ""}
+              <a class="primary-btn" href="tel:0118237749">Call Global Network Kenya · 0118 237749</a>
+            </div>
+          </article>`;
+      }
+
       async function adminRequest(path, options = {}) {
         try {
           return await window.GNK.apiRequest(path, options);
@@ -564,10 +674,6 @@
       }
 
       async function loadAuthenticatedUser() {
-        if (!window.GNK.getToken()) {
-          return null;
-        }
-
         let result;
         try {
           result = await window.GNK.apiRequest("/auth/me");
@@ -703,6 +809,22 @@
               <a class="secondary-btn" href="pages/packages.html">View advertising packages</a>
             </div>
           </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header">
+              <h2>Discover adverts</h2>
+              <span class="pill">Published</span>
+            </div>
+            <p class="meta">Browse current adverts from businesses across the network.</p>
+            <div id="dashboardPublishedAdverts" class="request-list">Loading published adverts…</div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header">
+              <h2>House and property adverts</h2>
+              <span class="pill">Published listings</span>
+            </div>
+            <p class="meta">Browse published adverts from Real Estate businesses. Call 0118 237749 for help with a listing.</p>
+            <div id="dashboardHouseAdverts" class="request-list">Loading published property adverts…</div>
+          </div>
         `;
 
         secondaryPanel.innerHTML = `
@@ -745,10 +867,12 @@
           </div>
         `;
 
-        const [businessResponse, advertResponse, paymentResponse] = await Promise.all([
+        const [businessResponse, advertResponse, paymentResponse, publishedAdvertResponse, houseAdvertResponse] = await Promise.all([
           window.GNK.apiRequest("/businesses/mine"),
           window.GNK.apiRequest("/adverts/mine"),
-          window.GNK.apiRequest("/payments/mine")
+          window.GNK.apiRequest("/payments/mine"),
+          window.GNK.apiRequest("/adverts"),
+          window.GNK.apiRequest("/adverts?category=Real%20Estate")
         ]);
         const businessCount = businessResponse.businesses?.length || 0;
         const advertCount = advertResponse.adverts?.length || 0;
@@ -764,13 +888,14 @@
           <article class="stat-card"><div class="label">Pending payments</div><div class="value">${paymentCount}</div></article>`;
 
         document.getElementById("accountAdverts").innerHTML = advertResponse.adverts?.length
-          ? advertResponse.adverts.map(advert => `
-            <article class="request-item">
-              <div class="item-top"><h3>${escapeHTML(advert.title)}</h3>
-                <span class="status ${escapeHTML(advert.status)}">${escapeHTML(advert.status)}</span></div>
-              <p class="meta">${escapeHTML(advert.business?.name || "Business")} · ${escapeHTML(advert.package?.name || "No package")} · Submitted ${formatDateStamp(advert.createdAt)}</p>
-            </article>`).join("")
+          ? advertResponse.adverts.map(advert => renderAdvertCard(advert, true)).join("")
           : '<div class="empty-state">You have not submitted any adverts.</div>';
+        document.getElementById("dashboardPublishedAdverts").innerHTML = publishedAdvertResponse.adverts?.length
+          ? publishedAdvertResponse.adverts.map(advert => renderAdvertCard(advert)).join("")
+          : '<div class="empty-state">There are no published adverts to display right now.</div>';
+        document.getElementById("dashboardHouseAdverts").innerHTML = houseAdvertResponse.adverts?.length
+          ? houseAdvertResponse.adverts.map(renderHouseAdvertCard).join("")
+          : '<div class="empty-state">There are no published house or property adverts right now.</div>';
         document.getElementById("accountPayments").innerHTML = paymentResponse.payments?.length
           ? paymentResponse.payments.map(payment => `
             <article class="request-item">
@@ -1338,6 +1463,243 @@
         }
       }
 
+      function renderUserDemo() {
+        document.title = "User Demo | Global Network Kenya";
+        document.getElementById("logoutBtn").textContent = "Exit demo";
+        document.getElementById("welcomeTitle").textContent = "User Dashboard (Demo)";
+        document.getElementById("dashboardIntro").textContent =
+          "You are signed in to a simulated sample user account. No real account or data is accessed or changed.";
+        document.getElementById("roleBadge").textContent = "DEMO · SAMPLE DATA";
+        document.getElementById("packagePrompt").style.display = "none";
+        document.getElementById("statsGrid").innerHTML = `
+          <article class="stat-card"><div class="label">My businesses</div><div class="value">2</div></article>
+          <article class="stat-card"><div class="label">Marketplace listings</div><div class="value">3</div></article>
+          <article class="stat-card"><div class="label">My adverts</div><div class="value">1</div></article>
+          <article class="stat-card"><div class="label">Pending payments</div><div class="value">1</div></article>`;
+        document.getElementById("primaryPanel").innerHTML = `
+          <div class="panel">
+            <div class="panel-header"><h2>My account</h2><span class="pill">Sample profile</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Amina Wekesa</h3><span class="status active">User</span></div><p class="meta">amina@example.test · Nakuru County</p></article>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>My businesses</h2><span class="pill">Examples</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Savanna Harvest Co.</h3><span class="status approved">Approved</span></div><p class="meta">Agriculture · Nakuru</p></article>
+              <article class="request-item"><div class="item-top"><h3>Rift Valley Fresh Foods</h3><span class="status pending">Under review</span></div><p class="meta">Food &amp; Retail · Nakuru</p></article>
+            </div>
+          </div>`;
+        document.getElementById("secondaryPanel").innerHTML = `
+          <div class="panel">
+            <div class="panel-header"><h2>Discover adverts</h2><span class="pill">Sample advert</span></div>
+            <article class="request-item advert-card">
+              <div class="item-top"><h3>Fresh from Nakuru farms</h3><span class="tag">Featured advert</span></div>
+              <p class="meta">Savanna Harvest Co. · Nakuru</p>
+              <p>Locally grown produce, freshly picked and ready for your table.</p>
+              <details><summary>View advert</summary><p>This is sample demo content. Sign in to view published adverts from the live network.</p></details>
+            </article>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h2>Marketplace listings</h2><span class="pill">Examples</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Fresh avocados (crate)</h3><span class="status published">Published</span></div><p class="meta">KES 2,500 · Nakuru</p></article>
+              <article class="request-item"><div class="item-top"><h3>Organic honey</h3><span class="status pending">Pending</span></div><p class="meta">KES 800 · Nakuru</p></article>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Recent activity</h2><span class="pill">Examples</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Featured advert request</h3><span class="status review">In review</span></div><p class="meta">Savanna Harvest Co. · Sample request</p></article>
+              <article class="request-item"><div class="item-top"><h3>Marketplace payment</h3><span class="status pending">Pending</span></div><p class="meta">KES 1,500 · Sample transaction</p></article>
+            </div>
+          </div>
+          <a class="primary-btn" style="display:inline-flex;margin-top:18px" href="pages/login.html">Return to login</a>`;
+      }
+
+      function renderAdvertiserDemo() {
+        const campaigns = [
+          {
+            id: 1,
+            title: "Build your brand online",
+            placement: "Featured",
+            status: "Published",
+            description: "Creative websites and digital campaigns designed for growing Kenyan businesses.",
+            schedule: "1–30 November 2026",
+            budget: "KES 5,000"
+          },
+          {
+            id: 2,
+            title: "Small business launch offer",
+            placement: "Standard",
+            status: "Under review",
+            description: "A sample campaign introducing Wazi Digital Studio services to new local businesses.",
+            schedule: "Starts after approval",
+            budget: "KES 2,500"
+          },
+          {
+            id: 3,
+            title: "Design that connects",
+            placement: "Featured",
+            status: "Needs changes",
+            description: "A sample campaign draft returned for an updated image and clearer call to action.",
+            schedule: "Not scheduled",
+            budget: "KES 5,000"
+          }
+        ];
+
+        document.title = "Advertiser Demo | Global Network Kenya";
+        document.getElementById("logoutBtn").textContent = "Exit demo";
+        document.getElementById("welcomeTitle").textContent = "Advertiser Dashboard (Demo)";
+        document.getElementById("dashboardIntro").textContent =
+          "Manage a sample business profile, review campaign statuses, explore ad placements, and preview payment information. Everything here is demo-only.";
+        document.getElementById("roleBadge").textContent = "DEMO · ADVERTISER";
+        document.getElementById("packagePrompt").style.display = "none";
+        document.getElementById("statsGrid").innerHTML = `
+          <article class="stat-card"><div class="label">Businesses</div><div class="value">1</div></article>
+          <article class="stat-card"><div class="label">Total campaigns</div><div class="value" id="demoCampaignCount">3</div></article>
+          <article class="stat-card"><div class="label">Published adverts</div><div class="value" id="demoPublishedCount">1</div></article>
+          <article class="stat-card"><div class="label">Campaigns in review</div><div class="value" id="demoReviewCount">1</div></article>`;
+        document.getElementById("primaryPanel").innerHTML = `
+          <div class="panel" style="margin-bottom:22px">
+            <div class="panel-header">
+              <div>
+                <h2>Businesses shining with RIOBA</h2>
+                <p class="meta">Illustrative campaign artwork showing how advertising can help ambitious businesses stand out.</p>
+              </div>
+              <span class="pill">RIOBA · DEMO CAMPAIGN</span>
+            </div>
+            <div class="rioba-showcase">
+              <article class="rioba-showcase-card">
+                <img src="assets/rioba-business-tower.svg" alt="RIOBA illustration of a thriving business district at sunrise" loading="lazy">
+                <h3>Big ideas. Brighter business.</h3>
+                <p>Campaign concept: help established businesses reach more customers.</p>
+              </article>
+              <article class="rioba-showcase-card">
+                <img src="assets/rioba-retail-growth.svg" alt="RIOBA illustration of successful local shops glowing together" loading="lazy">
+                <h3>Local businesses, in the spotlight</h3>
+                <p>Campaign concept: make retail brands easier to discover across Kenya.</p>
+              </article>
+              <article class="rioba-showcase-card">
+                <img src="assets/rioba-innovation-hub.svg" alt="RIOBA illustration of a modern innovation campus with rising lights" loading="lazy">
+                <h3>Make your next move visible</h3>
+                <p>Campaign concept: give growing companies a brighter digital presence.</p>
+              </article>
+            </div>
+            <p class="meta" style="margin-top:14px">Original demo illustrations. RIOBA results and featured businesses shown here are not real customer testimonials.</p>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h2>Business profile</h2><span class="pill">Sample account</span></div>
+            <div class="request-list">
+              <article class="request-item">
+                <div class="item-top"><h3>Wazi Digital Studio</h3><span class="status approved">Approved</span></div>
+                <p class="meta">Technology &amp; Creative Services · Nairobi County</p>
+                <p>Helping Kenyan businesses grow with practical digital marketing, web design, and branding.</p>
+                <p class="meta">Contact: demo@wazi.example · 0118 237749</p>
+                <p class="meta">Business profile visibility: Published</p>
+              </article>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Campaign performance</h2><span class="pill">Illustrative metrics</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Impressions</h3><span class="tag">This month</span></div><p class="meta">12,480 sample advert views</p></article>
+              <article class="request-item"><div class="item-top"><h3>Advert visits</h3><span class="tag">This month</span></div><p class="meta">346 sample visits · 2.8% illustrative engagement</p></article>
+              <article class="request-item"><div class="item-top"><h3>Campaign reach</h3><span class="tag">Nairobi</span></div><p class="meta">Sample audience across Nairobi County. Live analytics are not connected.</p></article>
+            </div>
+          </div>`;
+        document.getElementById("secondaryPanel").innerHTML = `
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Campaigns and adverts</h2>
+              <button class="primary-btn" id="demoCreateCampaign" type="button">Create demo campaign</button>
+            </div>
+            <p class="meta">Review each campaign’s placement, schedule, budget, and approval status.</p>
+            <p id="demoCampaignMessage" class="meta" role="status" aria-live="polite"></p>
+            <form class="video-form" id="demoCampaignForm" hidden>
+              <input id="demoCampaignTitle" type="text" placeholder="Campaign title" minlength="3" maxlength="150" required />
+              <textarea id="demoCampaignDescription" placeholder="Describe the advert" maxlength="500" required></textarea>
+              <select id="demoCampaignPlacement" required>
+                <option value="Standard">Standard placement</option>
+                <option value="Featured">Featured placement</option>
+                <option value="Banner">Banner placement</option>
+              </select>
+              <button class="primary-btn" type="submit">Save sample campaign</button>
+            </form>
+            <div class="request-list" id="demoCampaignList"></div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Ad packages</h2><span class="pill">Examples</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Standard</h3><span class="tag">KES 2,500 / 30 days</span></div><p class="meta">Directory placement for a campaign.</p></article>
+              <article class="request-item"><div class="item-top"><h3>Featured</h3><span class="tag">KES 5,000 / 30 days</span></div><p class="meta">Priority placement for increased visibility.</p></article>
+              <article class="request-item"><div class="item-top"><h3>Banner</h3><span class="tag">Sample package</span></div><p class="meta">Prominent banner placement. Contact the team for a quote.</p></article>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:22px">
+            <div class="panel-header"><h2>Payments and billing</h2><span class="pill">Sample data</span></div>
+            <div class="request-list">
+              <article class="request-item"><div class="item-top"><h3>Featured campaign</h3><span class="status approved">Paid</span></div><p class="meta">KES 5,000 · Paid 2 Nov 2026 · Example transaction</p></article>
+              <article class="request-item"><div class="item-top"><h3>Small business launch offer</h3><span class="status pending">Pending</span></div><p class="meta">KES 2,500 · Example payment request</p></article>
+            </div>
+            <p class="meta">Demo payments do not process money.</p>
+          </div>
+          <a class="primary-btn" style="display:inline-flex;margin-top:18px" href="pages/login.html">Return to login</a>`;
+
+        const campaignList = document.getElementById("demoCampaignList");
+        const campaignForm = document.getElementById("demoCampaignForm");
+        const campaignMessage = document.getElementById("demoCampaignMessage");
+        const statusClass = status => ({
+          Published: "published",
+          "Under review": "pending",
+          "Needs changes": "rejected",
+          Draft: "review"
+        })[status] || "pending";
+        const renderCampaigns = () => {
+          campaignList.innerHTML = campaigns.map(campaign => `
+            <article class="request-item">
+              <div class="item-top">
+                <h3>${escapeHTML(campaign.title)}</h3>
+                <span class="status ${statusClass(campaign.status)}">${escapeHTML(campaign.status)}</span>
+              </div>
+              <p class="meta">Wazi Digital Studio · ${escapeHTML(campaign.placement)} placement · ${escapeHTML(campaign.budget)}</p>
+              <details>
+                <summary>View campaign details</summary>
+                <p>${escapeHTML(campaign.description)}</p>
+                <p class="meta">Schedule: ${escapeHTML(campaign.schedule)} · Demo only</p>
+              </details>
+            </article>`).join("");
+          document.getElementById("demoCampaignCount").textContent = campaigns.length;
+          document.getElementById("demoPublishedCount").textContent =
+            campaigns.filter(campaign => campaign.status === "Published").length;
+          document.getElementById("demoReviewCount").textContent =
+            campaigns.filter(campaign => campaign.status === "Under review").length;
+        };
+
+        document.getElementById("demoCreateCampaign").addEventListener("click", () => {
+          campaignForm.hidden = !campaignForm.hidden;
+          campaignMessage.textContent = "";
+          if (!campaignForm.hidden) document.getElementById("demoCampaignTitle").focus();
+        });
+        campaignForm.addEventListener("submit", event => {
+          event.preventDefault();
+          campaigns.unshift({
+            id: Date.now(),
+            title: document.getElementById("demoCampaignTitle").value.trim(),
+            placement: document.getElementById("demoCampaignPlacement").value,
+            status: "Draft",
+            description: document.getElementById("demoCampaignDescription").value.trim(),
+            schedule: "Not scheduled",
+            budget: "Not set"
+          });
+          renderCampaigns();
+          campaignForm.reset();
+          campaignForm.hidden = true;
+          campaignMessage.textContent = "Sample campaign saved as a draft. No real advert or account was changed.";
+        });
+        renderCampaigns();
+      }
+
       function renderSuperAdminDemo() {
         const pendingRequests = [
           { id: 1, type: "Business", name: "Savanna Harvest Co.", owner: "Amina Wekesa", location: "Nakuru", age: "8 min ago", status: "Pending" },
@@ -1434,7 +1796,7 @@
       }
 
       document.getElementById("logoutBtn").addEventListener("click", () => {
-        if (new URLSearchParams(window.location.search).get("demo") === "super-admin") {
+        if (["super-admin", "user", "advertiser"].includes(new URLSearchParams(window.location.search).get("demo"))) {
           window.location.href = "pages/login.html";
           return;
         }
@@ -1443,8 +1805,15 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         showPackagePromptIfNeeded();
-        if (new URLSearchParams(window.location.search).get("demo") === "super-admin") {
-          renderSuperAdminDemo();
+        const demoMode = new URLSearchParams(window.location.search).get("demo");
+        if (["super-admin", "user", "advertiser"].includes(demoMode)) {
+          if (demoMode === "super-admin") {
+            renderSuperAdminDemo();
+          } else if (demoMode === "user") {
+            renderUserDemo();
+          } else {
+            renderAdvertiserDemo();
+          }
           return;
         }
 

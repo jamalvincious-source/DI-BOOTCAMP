@@ -46,7 +46,7 @@ function createBrowser(fetchImplementation) {
     return { gnk: window.GNK, storage };
 }
 
-test("apiRequest normalizes the configured API URL and adds the bearer token", async () => {
+test("apiRequest normalizes the API URL and keeps legacy bearer-token support", async () => {
     let request;
     const { gnk, storage } = createBrowser(async (url, options) => {
         request = { url, options };
@@ -61,6 +61,25 @@ test("apiRequest normalizes the configured API URL and adds the bearer token", a
     assert.equal(result.success, true);
     assert.equal(request.url, "https://api.example.test/api/auth/me");
     assert.equal(request.options.headers.get("Authorization"), "Bearer test-token");
+    assert.equal(request.options.credentials, "include");
+});
+
+test("apiRequest uses cookies for new sessions without storing an auth token", async () => {
+    let request;
+    const { gnk, storage } = createBrowser(async (url, options) => {
+        request = { url, options };
+        return new Response(JSON.stringify({ success: true }), {
+            headers: { "content-type": "application/json" }
+        });
+    });
+    gnk.saveSession({ id: 7, name: "Jane Doe" }, true);
+
+    await gnk.apiRequest("/auth/me");
+
+    assert.equal(request.options.credentials, "include");
+    assert.equal(request.options.headers.has("Authorization"), false);
+    assert.deepEqual(gnk.getCurrentUser(), { id: 7, name: "Jane Doe" });
+    assert.equal(storage.has("gnk_token"), false);
 });
 
 test("apiRequest rejects non-path endpoints before making a request", async () => {

@@ -5,36 +5,21 @@ const path = require("path");
 
 // Load the root .env file.
 require("dotenv").config({
-    path: path.resolve(__dirname, "../../../../.env")
+    path: path.resolve(__dirname, "../../../.env")
 });
 
 const { Pool } = require("pg");
 
-// Check required database settings.
-const required = [
-    "DB_HOST",
-    "DB_NAME",
-    "DB_USER",
-    "DB_PASSWORD"
-];
-
-for (const key of required) {
-    if (!process.env[key]) {
-        throw new Error(`Missing environment variable: ${key}`);
-    }
+if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is required. Configure a PostgreSQL connection string in .env.");
 }
 
 // Configure PostgreSQL.
 const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT || 5432),
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-
+    connectionString: process.env.DATABASE_URL,
     ssl: process.env.PGSSL === "require"
         ? { rejectUnauthorized: false }
-        : false,
+        : undefined,
 
     max: 10,
     idleTimeoutMillis: 30000,
@@ -86,4 +71,20 @@ module.exports = {
     connectDatabase,
     closeDatabase
 };
+
+if (require.main === module) {
+    (async () => {
+        try {
+            await connectDatabase();
+        } catch (error) {
+            console.error("Database setup check failed:", error.message);
+            process.exitCode = 1;
+        } finally {
+            await closeDatabase();
+        }
+    })().catch((error) => {
+        console.error("Database setup cleanup failed:", error.message);
+        process.exitCode = 1;
+    });
+}
 ``

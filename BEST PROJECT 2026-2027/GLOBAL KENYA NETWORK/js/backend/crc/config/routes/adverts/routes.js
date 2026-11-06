@@ -35,8 +35,13 @@ function parseStatus(value) {
 
 router.get("/", async (req, res, next) => {
     const placement = req.query.placement;
+    const category = req.query.category;
     if (placement && !placements.includes(String(placement))) {
         return res.status(400).json({ success: false, message: "Invalid advert placement." });
+    }
+    if (category !== undefined &&
+        (typeof category !== "string" || category.trim().length < 2 || category.trim().length > 100)) {
+        return res.status(400).json({ success: false, message: "Invalid advert category." });
     }
 
     try {
@@ -44,14 +49,22 @@ router.get("/", async (req, res, next) => {
         const adverts = await prisma.advert.findMany({
             where: {
                 status: "published",
-                business: { status: "published" },
+                business: {
+                    status: "published",
+                    ...(category ? {
+                        category: {
+                            equals: category.trim(),
+                            mode: "insensitive"
+                        }
+                    } : {})
+                },
                 AND: [
                     { OR: [{ startsAt: null }, { startsAt: { lte: now } }] },
                     { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }
                 ],
                 ...(placement ? { placement: String(placement) } : {})
             },
-            include: { business: { select: { name: true, county: true } } },
+            include: { business: { select: { name: true, county: true, category: true } } },
             orderBy: { createdAt: "desc" },
             take: 50
         });
